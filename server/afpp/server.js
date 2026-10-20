@@ -2,10 +2,11 @@
 /**
  * AFPP — the shared derive server behind the SoundWalk global map.
  *
- * Phones (the SoundWalk APK) publish a derive they chose to share: its trace,
- * its recordings' metadata, then each recording's audio. Browsers (the web
- * front on Vercel) read the activity dots, the derives in view, the audio, and
- * an SSE stream of what changes. Plain node:http, no dependencies.
+ * Walkers (the Deriva Sonora app, or the site in a browser) publish a derive
+ * they chose to share: its trace, its recordings' metadata, then each
+ * recording's audio. The site (altred.xyz/AlpineFeministPunkParade) reads the
+ * activity dots, the derives in view, the audio, and an SSE stream of what
+ * changes. Plain node:http, no dependencies.
  *
  * Auth without a secret in the APK: a device registers its random deviceId and
  * gets back key = HMAC(SERVER_SECRET, deviceId). Writes carry both; the server

@@ -5,6 +5,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [AFPP] — 2026-10-20 — Deriva Sonora 1.1.0; no Vercel
+
+### Changed
+- **Deriva Sonora 1.1.0** (versionCode 10100), built from this repo, is the
+  download at altred.xyz/AlpineFeministPunkParade/deriva-sonora.apk.
+- **AFPP is not on Vercel.** altred.xyz serves the site, the API, the relay
+  and the APK; `vercel.json` is gone, the server allows only the site and the
+  app (https://localhost, capacitor://localhost), and the setup script and
+  docs no longer ask for a Vercel origin. (Vercel's "biomap" project builds the
+  BioMapp repo, the SoundWalk app; it is not affected.)
+
+---
+
 ## [AFPP] — 2026-10-20 — the splash, and pages that always start
 
 ### Added

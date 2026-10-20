@@ -28,7 +28,7 @@ npm test                                                     # (in server/afpp) 
 |---|---|---|
 | `SERVER_SECRET` | — (required, 16+ chars) | HMAC key for device keys. Changing it invalidates every phone's key (they re-register automatically). |
 | `ADMIN_TOKEN` | — | `Authorization: Bearer …` may delete any derive (moderation). |
-| `ALLOWED_ORIGINS` | localhost dev + Capacitor | Comma list of browser origins: the Vercel site(s), `https://localhost` and `capacitor://localhost` (the APK WebView). `*` allows any. |
+| `ALLOWED_ORIGINS` | localhost dev + Capacitor | Comma list of browser origins: the site (`https://altred.xyz`), `https://localhost` and `capacitor://localhost` (the APK WebView). `*` allows any. |
 | `DATA_DIR` | `./data` | |
 | `MAX_AUDIO_BYTES` | 25 MB | per recording |
 | `HOST` / `PORT` | `127.0.0.1` / `8790` | |
@@ -73,7 +73,7 @@ The code lives in `/opt/afpp`, the data in `/var/lib/afpp`, and the secrets in
   box. It installs Node if needed, creates the `afpp` user, generates the
   secrets, writes the systemd unit and the nginx snippet, and includes the
   snippet in the altred.xyz HTTPS block. The site config is backed up first and
-  restored if `nginx -t` fails. Edit `VERCEL_ORIGIN` at the top first.
+  restored if `nginx -t` fails.
 - `deploy/deploy.sh`, from the Mac (`root@altred.xyz:8888`; override `HOST=` / `PORT=`):
 
 ```sh
@@ -83,8 +83,8 @@ server/afpp/deploy/deploy.sh push -n    # rehearsal
 server/afpp/deploy/deploy.sh push       # upload + restart + health check
 ```
 
-Then set `VITE_AFPP_API=https://altred.xyz/AlpineFeministPunkParade/afpp` on Vercel and in
-APK builds.
+The site itself goes up with every push to `main` (GitHub Actions, `docs/DEPLOY.md`);
+APK builds point at `https://altred.xyz/AlpineFeministPunkParade/afpp` by default.
 
 Moderation: `curl -X DELETE -H "Authorization: Bearer $ADMIN_TOKEN" https://altred.xyz/AlpineFeministPunkParade/afpp/api/derives/<id>`.
 Backups: `DATA_DIR` is the whole state, so rsync `/var/lib/afpp`.

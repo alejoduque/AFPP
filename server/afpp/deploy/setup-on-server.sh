@@ -29,7 +29,6 @@ BASE="/AlpineFeministPunkParade"                  # the site's path
 OLD_BASE="/permasoftware"                          # its former path: redirected, API kept
 PREFIX="${BASE}/afpp"                             # URL path for the API
 WEBROOT_DIR="/var/www/${SITE}"
-VERCEL_ORIGIN="${VERCEL_ORIGIN:-https://YOUR-PROJECT.vercel.app}"  # ← your Vercel site (or pass VERCEL_ORIGIN=… in the environment)
 PORT=8790
 
 # ── 1. Node 22, private to AFPP ────────────────────────────────────────────
@@ -71,7 +70,7 @@ if [ ! -f /etc/afpp/afpp.env ]; then
   cat > /etc/afpp/afpp.env <<EOF
 SERVER_SECRET=$(openssl rand -hex 32)
 ADMIN_TOKEN=$(openssl rand -hex 24)
-ALLOWED_ORIGINS=${VERCEL_ORIGIN},https://${SITE},https://localhost,capacitor://localhost
+ALLOWED_ORIGINS=https://${SITE},https://localhost,capacitor://localhost
 MAX_AUDIO_BYTES=26214400
 EOF
   umask 022
@@ -276,15 +275,15 @@ API="https://${SITE}${PREFIX}"
 curl -fsS "https://${SITE}${OLD_BASE}/afpp/api/health" >/dev/null && echo "  ← the old API path still answers (installed apps)"
 curl -sI "https://${SITE}${OLD_BASE}/howto/" | grep -i "^location" || echo "!! the old address does not redirect"
 curl -fsS "${API}/api/health" && echo "  ← public API OK at ${API}"
-curl -sI -H "Origin: ${VERCEL_ORIGIN}" "${API}/api/activity" | grep -i access-control-allow-origin \
-  || echo "!! no CORS header for ${VERCEL_ORIGIN}: check ALLOWED_ORIGINS in /etc/afpp/afpp.env"
+curl -sI -H "Origin: https://${SITE}" "${API}/api/activity" | grep -i access-control-allow-origin \
+  || echo "!! no CORS header for https://${SITE}: check ALLOWED_ORIGINS in /etc/afpp/afpp.env"
 
 cat <<EOF
 
 Done. The API is at ${API}
 
-  • Vercel → Settings → Environment Variables:  VITE_AFPP_API=${API}   (then redeploy)
-  • APK builds (on the Mac):   VITE_AFPP_API=${API} ./build_paid.sh --apk
+  • The site: a push to main deploys it (GitHub Actions, docs/DEPLOY.md)
+  • APK builds (on the Mac):   ./build_deriva.sh   (VITE_AFPP_API defaults to ${API})
   • More web origins:          edit ALLOWED_ORIGINS in /etc/afpp/afpp.env && systemctl restart afpp
   • Update the code later:     rsync again (see top), then: systemctl restart afpp
   • Delete a shared derive:

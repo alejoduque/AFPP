@@ -40,7 +40,6 @@ check)
   "
   ;;
 install)
-  # Edit VERCEL_ORIGIN at the top of setup-on-server.sh first.
   remote "mkdir -p /opt/afpp"
   rsync -az --exclude test/ --exclude data/ -e "${SSH[*]}" "$HERE/" "$HOST:/opt/afpp/"
   "${SSH[@]}" -t "$HOST" "bash /opt/afpp/deploy/setup-on-server.sh"
