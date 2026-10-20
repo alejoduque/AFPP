@@ -1,0 +1,37 @@
+{
+  "centroMapa": {
+    "lat": 8.4127,
+    "lon": -75.5840
+  },
+  
+  "defaultZoom": 16,
+  
+  "audio": {
+    "maxDuration": 600,
+    "sampleRate": 44100,
+    "bitRate": 128000,
+    "format": "audio/mp3"
+  },
+  
+  "location": {
+    "enableHighAccuracy": true,
+    "timeout": 10000,
+    "maximumAge": 300000,
+    "minAccuracy": 50
+  },
+  
+  "storage": {
+    "recordingsKey": "manakai_audio_recordings",
+    "sessionsKey": "soundwalk_sessions",
+    "userAliasKey": "soundwalk_user_alias",
+    "maxStorageSize": 157286400,
+    "autoCleanupDays": 60
+  },
+  
+  "app": {
+    "name": "SoundWalk Audio Recorder",
+    "version": "1.0.0",
+    "maxFileSize": 10485760,
+    "description": "SoundWalk: Audio recording and sound mapping application"
+  }
+}

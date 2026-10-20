@@ -1,0 +1,177 @@
+{
+ "cell": [
+  32,
+  24
+ ],
+ "actors": [
+  {
+   "name": "listener",
+   "row": 0,
+   "frames": 4,
+   "fps": 3,
+   "seq": [
+    0,
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "name": "plant",
+   "row": 1,
+   "frames": 7,
+   "fps": 2,
+   "seq": [
+    0,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    6,
+    6,
+    6,
+    6,
+    6
+   ]
+  },
+  {
+   "name": "forager",
+   "row": 2,
+   "frames": 7,
+   "fps": 2.5,
+   "seq": [
+    0,
+    1,
+    0,
+    1,
+    2,
+    3,
+    4,
+    4,
+    5,
+    6,
+    6,
+    2
+   ]
+  },
+  {
+   "name": "cow",
+   "row": 3,
+   "frames": 2,
+   "fps": 1,
+   "seq": [
+    0,
+    1,
+    1,
+    0,
+    1
+   ]
+  },
+  {
+   "name": "traceur",
+   "row": 4,
+   "frames": 6,
+   "fps": 4,
+   "seq": [
+    0,
+    1,
+    0,
+    1,
+    2,
+    3,
+    3,
+    4,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "flag",
+   "row": 5,
+   "frames": 2,
+   "fps": 2.5,
+   "seq": [
+    0,
+    1
+   ]
+  },
+  {
+   "name": "mushroom",
+   "row": 6,
+   "frames": 5,
+   "fps": 2,
+   "seq": [
+    0,
+    0,
+    1,
+    2,
+    3,
+    4,
+    4,
+    4,
+    4,
+    4
+   ]
+  },
+  {
+   "name": "dancer",
+   "row": 7,
+   "frames": 3,
+   "fps": 3,
+   "seq": [
+    0,
+    1,
+    0,
+    1,
+    2,
+    2
+   ]
+  },
+  {
+   "name": "sower",
+   "row": 8,
+   "frames": 3,
+   "fps": 2.5,
+   "seq": [
+    0,
+    1,
+    2,
+    2
+   ]
+  },
+  {
+   "name": "bird",
+   "row": 9,
+   "frames": 2,
+   "fps": 5,
+   "seq": [
+    0,
+    1
+   ]
+  },
+  {
+   "name": "sky",
+   "row": 10,
+   "frames": 3,
+   "fps": 1.5,
+   "seq": [
+    0,
+    1,
+    2
+   ]
+  },
+  {
+   "name": "butterfly",
+   "row": 11,
+   "frames": 2,
+   "fps": 5,
+   "seq": [
+    0,
+    1
+   ]
+  }
+ ]
+}

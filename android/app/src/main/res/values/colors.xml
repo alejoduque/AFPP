@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Deriva Sonora: three tones only. -->
+    <color name="ground">#000000</color>
+    <color name="ink">#9B4DFF</color>
+    <color name="lit">#FFFFFF</color>
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#9B4DFF</color>
+</resources>

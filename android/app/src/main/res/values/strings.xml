@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Deriva Sonora</string>
+    <string name="title_activity_main">Deriva Sonora</string>
+    <string name="package_name">xyz.altred.permasoftware</string>
+    <string name="custom_url_scheme">xyz.altred.permasoftware</string>
+</resources>

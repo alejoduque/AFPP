@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="robots" content="noindex">
+<title>Design kit · Deriva Sonora · AFPP</title>
+<meta property="og:image" content="https://altred.xyz/AlpineFeministPunkParade/afpp-card.png">
+<link rel="icon" href="../favicon.ico">
+<script src="../ticker/ticker.js" defer></script>
+<style>
+  @font-face { font-family: 'Lugar Comun'; src: url(../fonts/LugarComun-Regular.woff2) format('woff2'); font-display: swap; }
+  :root { --ground: #000; --ink: #9b4dff; --lit: #fff; --dim: #6a3bb0; --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+  * { box-sizing: border-box; }
+  html { background: var(--ground); }
+  body { margin: 0 auto; max-width: 52rem; padding: 0 16px 64px; background: var(--ground); color: var(--ink); font: 15px/1.6 var(--mono); }
+  ::selection { background: var(--ink); color: var(--ground); }
+  a { color: var(--lit); text-decoration: none; border-bottom: 1px dashed var(--ink); }
+  a:hover { border-bottom-color: var(--lit); }
+  header.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px dashed var(--dim); }
+  header.top b { color: var(--lit); letter-spacing: 0.2em; font-size: 13px; }
+  header.top nav { display: flex; flex-wrap: wrap; gap: 12px; margin-left: auto; font-size: 13px; }
+  h1, h2 { font-family: 'Lugar Comun', var(--mono); font-weight: normal; color: var(--lit); letter-spacing: 0.04em; }
+  h1 { font-size: 2.2rem; line-height: 1.1; margin: 1.2em 0 0.3em; }
+  h2 { font-size: 1.35rem; margin: 2.2em 0 0.6em; padding-top: 0.6em; border-top: 1px dashed var(--dim); }
+  p, li { max-width: 44rem; }
+  .lit { color: var(--lit); }
+  .k { color: var(--lit); border: 1px solid var(--ink); padding: 0 4px; white-space: nowrap; }
+  table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+  th, td { text-align: left; padding: 8px; border-bottom: 1px dashed var(--dim); vertical-align: middle; }
+  th { color: var(--lit); font-weight: normal; }
+  td.g { width: 72px; text-align: center; }
+  td.g img { width: 64px; height: 64px; image-rendering: pixelated; }
+  td.g img.small { width: 40px; height: 40px; }
+  img.strip { max-width: 100%; height: auto; image-rendering: pixelated; border: 1px solid var(--dim); }
+  img.trace { width: 100%; max-width: 720px; image-rendering: pixelated; border: 1px solid var(--dim); }
+  .dim { color: var(--dim); }
+  .sq { display: inline-block; width: 14px; height: 14px; background: var(--ink); outline: 1px solid var(--ink); border: 2px solid #000; }
+  .sq.hollow { background: #000; outline: 0; border-color: var(--ink); }
+  .sq.me { background: var(--lit); outline-color: var(--lit); }
+  .crumbs { display: inline-flex; gap: 10px; align-items: center; }
+  .crumbs i { width: 5px; height: 5px; background: var(--ink); display: inline-block; }
+  .try { display: flex; flex-wrap: wrap; gap: 10px; margin: 1em 0; }
+  .try a { border: 1px solid var(--ink); padding: 8px 14px; color: var(--ink); }
+  .try a:hover { background: var(--lit); color: var(--ground); border-color: var(--lit); }
+  .note { border-left: 2px solid var(--ink); padding: 2px 0 2px 12px; }
+  .other-langs p { color: var(--dim); }
+  code { color: var(--lit); }
+  .afpp-ticker { display: block; width: 100%; height: 48px; image-rendering: pixelated; border-bottom: 1px dashed var(--dim); }
+  footer { margin-top: 3em; padding-top: 12px; border-top: 1px dashed var(--dim); font-size: 12px; color: var(--dim); }
+</style>
+</head>
+<body>
+<header class="top">
+  <b>DERIVA SONORA · AFPP · KIT</b>
+  <nav>
+    <a href="../">globe</a>
+    <a href="../howto/">how to use</a>
+    <a href="../bitacora/">bitácora</a>
+  </nav>
+</header>
+<canvas class="afpp-ticker" data-scale="2" aria-hidden="true"></canvas>
+
+<h1>Design kit<br><span style="font-size:0.6em">Marino · Seraina · AFPP</span></h1>
+<p>The app draws a <span class="lit">trace</span> of each walk: a trail of breadcrumbs, like the ones Hansel and Gretel dropped to find their way back. The marks along it now tell <span class="lit">our</span> story: the body that walks, and the food that grows along the way. They were drawn here first, as a proposal, to be redrawn by hand whenever we like.</p>
+
+<h2>The four marks</h2>
+<table>
+  <tr><th>slot</th><th>what it is</th></tr>
+  <tr><td><code>me</code></td><td>You, on the map while you walk. White, and it moves.</td></tr>
+  <tr><td><code>sound</code></td><td>A recorded sound. Tap it to listen; it turns white while it plays. Each sound keeps its own variant.</td></tr>
+  <tr><td><code>other</code></td><td>A sound someone else shared, near you.</td></tr>
+  <tr><td><code>crumb</code></td><td>The breadcrumbs, dropped along every trace, taking turns through the variants.</td></tr>
+</table>
+
+<h2>Marino: the body</h2>
+<p>You walk (two steps of a stride). Where a sound was recorded, a <span class="lit">gesture</span>: listening with a hand at the ear, crouching to the ground, reaching up, lying in the grass, dancing, standing still. Other walkers: the same bodies, framed. The breadcrumbs are <span class="lit">footprints</span>, left and right.</p>
+<p><img class="strip" src="gallery-marino.png" alt="Marks of the Marino set: a walking figure in two steps; figures listening, crouching, reaching, lying, dancing, standing; the same figures in frames; two footprints."></p>
+<p><img class="trace" src="preview-marino.png" alt="A purple trace on black with footprints along it, gestures where sounds were recorded, a framed figure on a dashed trace, and the walker at the end."></p>
+
+<h2>Seraina: local food</h2>
+<p>You are a <span class="lit">sprout</span>, growing. Where a sound was recorded, what was <span class="lit">foraged</span> there: a mushroom, berries, a leaf, wild garlic, an acorn, an apple. Others: the same, hollow. The breadcrumbs are <span class="lit">seeds</span>: grain, bean, sunflower, pumpkin.</p>
+<p><img class="strip" src="gallery-seraina.png" alt="Marks of the Seraina set: a sprout in two stages; a mushroom, berries, a leaf, wild garlic, an acorn, an apple; the same hollow; four seeds."></p>
+<p><img class="trace" src="preview-seraina.png" alt="A purple trace on black with seeds along it, foraged things where sounds were recorded, a hollow one on a dashed trace, and a sprout at the end."></p>
+
+<h2>AFPP: both, woven <span style="font-size:0.7em" class="dim">(what everyone sees)</span></h2>
+<p>The walker of Marino; Seraina's harvest where the sounds are; other walkers as Marino's framed bodies; and the trail itself <span class="lit">alternates footprints and seeds</span>: a step, a seed, a step, a seed.</p>
+<p><img class="strip" src="gallery-afpp.png" alt="Marks of the AFPP set: the walker; the foraged things; framed figures; footprints alternating with seeds."></p>
+<p><img class="trace" src="preview-afpp.png" alt="A purple trace on black with footprints and seeds alternating along it, foraged things at the sounds, a framed figure on a dashed trace, and the walker at the end."></p>
+
+<h2>Try them on the map</h2>
+<p>These links switch the marks for <span class="lit">you only</span>. They show once there are shared walks on the map.</p>
+<div class="try">
+  <a href="../?glyphs=afpp">AFPP</a>
+  <a href="../?glyphs=marino">Marino</a>
+  <a href="../?glyphs=seraina">Seraina</a>
+  <a href="../?glyphs=squares">plain squares</a>
+</div>
+
+<h2>Redraw them by hand</h2>
+<ul>
+  <li><span class="lit">Marino</span>: which gestures are ours? Which way does the body lean when it listens? Should <code>me</code> change while recording (crouch) and while still (stand)?</li>
+  <li><span class="lit">Seraina</span>: which plants actually grow along our routes, in which season? Seeds that were really gathered, drawn from life?</li>
+  <li>Any mark can be replaced on its own: one drawing, one slot, or one variant.</li>
+</ul>
+
+<h2>How to make a drawing a mark</h2>
+<ol>
+  <li>Black pen on white paper. Thick, simple lines read best: each mark ends up about <span class="lit">16 to 32 dots</span> wide.</li>
+  <li>One drawing per sheet, centred, with nothing else in the frame.</li>
+  <li>Take a photo from straight above, in daylight. Any phone is fine.</li>
+  <li>Send it with a word: which slot, and if it belongs to a set (<em>marino</em>, <em>seraina</em>, or a new one).</li>
+</ol>
+<p>It becomes a 1-bit glyph in a minute: purple on black, like the parade drawing. Then it is live on the map, first behind a <code>?glyphs=</code> link to try, then for everyone once we agree.</p>
+
+<details>
+  <summary class="lit">For whoever converts the drawings</summary>
+  <pre><code>python3 tools/glyph_from_sketch.py photo.jpg marino sound --px 24
+python3 tools/glyph_from_sketch.py photo.jpg seraina crumb --px 16
+./deploy_afpp_web.sh            # then: altred.xyz/AlpineFeministPunkParade/?glyphs=marino
+# to make a set the default: "active": "marino" in public/glyphs/glyphs.json, deploy again
+./build_deriva.sh               # the app carries the same sets</code></pre>
+</details>
+
+<section class="other-langs">
+  <h2>Deutsch · Français</h2>
+  <p><span class="lit">DE.</span> Die App zeichnet die Spur jedes Spaziergangs, wie die Brotkrumen von Hänsel und Gretel. Vier Zeichen füllen die Karte: du (<code>me</code>), ein Klang (<code>sound</code>), der Klang von anderen (<code>other</code>), die Krumen entlang der Spur (<code>crumb</code>). Zeichne sie mit schwarzem Stift auf weißes Papier, ein Motiv pro Blatt, fotografiere von oben und schick das Foto mit dem Namen des Platzes. Es wird ein 1-Bit-Zeichen in Lila.</p>
+  <p><span class="lit">FR.</span> L’appli dessine la trace de chaque marche, comme les miettes de Hansel et Gretel. Quatre signes remplissent la carte : toi (<code>me</code>), un son (<code>sound</code>), le son des autres (<code>other</code>), les miettes le long de la trace (<code>crumb</code>). Dessine-les au feutre noir sur papier blanc, un motif par feuille, photographie d’en haut et envoie la photo avec le nom de la case. Ça devient un signe 1 bit en violet.</p>
+</section>
+
+<footer>Alpine Feminist Punk Parade · Deriva Sonora · permasoftware, 1-bit</footer>
+</body>
+</html>

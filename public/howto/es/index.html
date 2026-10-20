@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Deriva Sonora: cómo usar</title>
+<meta property="og:title" content="Deriva Sonora: cómo usar">
+<meta property="og:image" content="https://altred.xyz/AlpineFeministPunkParade/afpp-card.png">
+<link rel="icon" href="../../favicon.ico">
+<script src="../../ticker/ticker.js" defer></script>
+<link rel="alternate" hreflang="en" href="https://altred.xyz/AlpineFeministPunkParade/howto/">
+<link rel="alternate" hreflang="de" href="https://altred.xyz/AlpineFeministPunkParade/howto/de/">
+<link rel="alternate" hreflang="fr" href="https://altred.xyz/AlpineFeministPunkParade/howto/fr/">
+<link rel="alternate" hreflang="es" href="https://altred.xyz/AlpineFeministPunkParade/howto/es/">
+<style>
+  @font-face { font-family: 'Lugar Comun'; src: url(../../fonts/LugarComun-Regular.woff2) format('woff2'); font-display: swap; }
+  :root { --ground: #000; --ink: #9b4dff; --lit: #fff; --dim: #6a3bb0; --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+  * { box-sizing: border-box; }
+  html { background: var(--ground); }
+  body { margin: 0 auto; max-width: 46rem; padding: 0 16px 64px; background: var(--ground); color: var(--ink); font: 15px/1.6 var(--mono); }
+  ::selection { background: var(--ink); color: var(--ground); }
+  a { color: var(--lit); text-decoration: none; border-bottom: 1px dashed var(--ink); }
+  a:hover { border-bottom-color: var(--lit); }
+  header.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px dashed var(--dim); position: sticky; top: 0; background: var(--ground); z-index: 1; }
+  header.top b { color: var(--lit); letter-spacing: 0.2em; font-size: 13px; }
+  header.top nav { display: flex; flex-wrap: wrap; gap: 12px; margin-left: auto; font-size: 13px; }
+  .langs a[aria-current] { color: var(--ground); background: var(--ink); border: 0; padding: 0 3px; }
+  .art { margin: 24px auto 0; max-width: 32rem; }
+  .afpp-ticker { display: block; width: 100%; height: 48px; image-rendering: pixelated; border-bottom: 1px dashed var(--dim); }
+  .art img { display: block; width: 100%; height: auto; image-rendering: pixelated; }
+  h1, h2 { font-family: 'Lugar Comun', var(--mono); font-weight: normal; color: var(--lit); letter-spacing: 0.04em; }
+  h1 { font-size: 2.2rem; line-height: 1.1; margin: 1em 0 0.3em; }
+  h2 { font-size: 1.4rem; margin: 2.2em 0 0.6em; padding-top: 0.6em; border-top: 1px dashed var(--dim); }
+  h3 { color: var(--lit); font-size: 1rem; margin: 1.6em 0 0.4em; }
+  h3::before { content: '// '; color: var(--dim); }
+  p, li { max-width: 40rem; }
+  ol, ul { padding-left: 1.4em; }
+  li { margin: 0.35em 0; }
+  li::marker { color: var(--dim); }
+  .lit { color: var(--lit); }
+  .k { color: var(--lit); border: 1px solid var(--ink); padding: 0 4px; white-space: nowrap; }
+  .get { display: flex; flex-wrap: wrap; gap: 10px; margin: 1.2em 0; }
+  .get a { border: 1px solid var(--ink); padding: 8px 14px; color: var(--ink); }
+  .get a.main { background: var(--ink); color: var(--ground); font-weight: bold; }
+  .get a:hover { background: var(--lit); color: var(--ground); border-color: var(--lit); }
+  .note { border-left: 2px solid var(--ink); padding: 2px 0 2px 12px; }
+  footer { margin-top: 3em; padding-top: 12px; border-top: 1px dashed var(--dim); font-size: 12px; color: var(--dim); }
+  @media (max-width: 520px) { body { font-size: 14px; } h1 { font-size: 1.8rem; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <b>DERIVA SONORA · AFPP</b>
+  <nav>
+    <a href="../../">globo</a>
+    <a href="../../deriva-sonora.apk" download>app Android ↓</a>
+    <a href="../../bitacora/">bitácora</a>
+    <span class="langs"><a href="../" hreflang="en" lang="en" title="English">EN</a> <a href="../de/" hreflang="de" lang="de" title="Deutsch">DE</a> <a href="../fr/" hreflang="fr" lang="fr" title="Français">FR</a> <a href="../es/" hreflang="es" lang="es" aria-current="page" title="Español">ES</a></span>
+  </nav>
+</header>
+
+<canvas class="afpp-ticker" data-scale="2" aria-hidden="true"></canvas>
+<figure class="art"><img src="../../afpp-logo.png" width="900" height="1200" alt="Alpine Feminist Punk Parade: título escrito a mano sobre un dibujo de un pueblo alpino, un desfile por la carretera de montaña y una larga mesa con comida."></figure>
+
+<h1>Cómo usar<br>Deriva Sonora</h1>
+<p>Caminantes de cualquier lugar graban los sonidos de sus <span class="lit">derivas</span> (caminatas sin rumbo) y, si quieren, las comparten. Aquí se escuchan: un globo con un punto donde alguien compartió una deriva, el mapa de cada lugar, y los <span class="lit">anillos</span> para mezclar sonidos lejanos. Un proyecto de la <span class="lit">Alpine Feminist Punk Parade</span>. Solo tres tonos: negro, morado y blanco para lo que está activo o sonando.</p>
+<div class="get">
+  <a class="main" href="../../">Abrir el globo</a>
+  <a href="../../deriva-sonora.apk" download>Descargar la app Android (gratis)</a>
+</div>
+
+<h2>Escuchar, en la web</h2>
+<h3>El globo</h3>
+<ul>
+  <li>Cada <span class="lit">punto que parpadea</span> es una deriva compartida: cuanto más reciente, más rápido parpadea; <span class="lit">blanco</span> si es de la última hora o acaba de subirse.</li>
+  <li><span class="k">arrastra</span> para girarlo; la rueda del ratón acerca. Mientras el puntero está sobre el globo, deja de girar para que puedas atrapar un punto.</li>
+  <li>Pasa sobre un punto para ver quién y cuántos sonidos; <span class="k">clic</span> para ir allí.</li>
+</ul>
+<h3>El mapa del lugar</h3>
+<ul>
+  <li>El globo gira hasta el punto y aterriza en un mapa de unos <span class="lit">10 km</span>, dibujado en líneas moradas.</li>
+  <li>Los <span class="lit">trazos</span> son los recorridos; los <span class="lit">cuadrados</span>, los sonidos. Toca un trazo para ver sus sonidos, o un cuadrado para escucharlo.</li>
+  <li><span class="k">▶</span> escucha; <span class="k">→ anillos</span> lo manda a la mezcla; <span class="k">◯ Globo</span> vuelve.</li>
+  <li>Cada lugar tiene su dirección (p. ej. <span class="lit">…/AlpineFeministPunkParade/#46.5000,8.5000</span>): cópiala para compartir ese mapa.</li>
+</ul>
+<h3>Los anillos</h3>
+<ul>
+  <li>Ábrelos con <span class="k">◎ anillos</span>, abajo. Los sonidos que mandaste esperan en el borde: <span class="lit">arrástralos adentro</span> del círculo para oírlos.</li>
+  <li>Más cerca del centro, más fuerte; a la izquierda o la derecha, se oye por ese lado. Suéltalo afuera y vuelve a esperar.</li>
+  <li>Pueden sonar juntos sonidos de lugares muy lejanos: esa es la idea. Cada uno suena en bucle.</li>
+  <li>Teclado: <span class="k">Tab</span> hasta un sonido, flechas para moverlo, <span class="k">Enter</span> para entrar o salir, <span class="k">Supr</span> para quitarlo. Tu mezcla se guarda en tu navegador.</li>
+</ul>
+<h3>El chat y la bitácora</h3>
+<p>Junto al globo (debajo, en el teléfono) está <span class="lit">#AFPP</span>, el chat de la Alpine Feminist Punk Parade. Elige un apodo y <span class="k">Entrar</span>. <span class="k">/nick</span> cambia tu apodo, <span class="k">/me</span> describe una acción; toca su título para plegarlo. Todo lo que se dice en #AFPP, y cada deriva compartida, queda en la <a href="../../bitacora/">bitácora</a> pública.</p>
+
+<h2>Grabar y compartir, con la app</h2>
+<h3>Instalar</h3>
+<ol>
+  <li><span class="lit">¿Sin Android?</span> Graba en el navegador: abre <a href="../../?recorder">altred.xyz/AlpineFeministPunkParade/?recorder</a> en Safari o Chrome en un Mac, un iPhone o cualquier computador, y permite la ubicación y el micrófono. En el Mac, la Localización debe estar activada para el navegador (Ajustes del Sistema → Privacidad y seguridad). En el iPhone, deja la pantalla encendida mientras caminas. Los sonidos quedan en ese navegador hasta que compartas la deriva.</li>
+  <li>En un teléfono Android, descarga <a href="../../deriva-sonora.apk" download>deriva-sonora.apk</a> y ábrelo.</li>
+  <li>Android pedirá <span class="lit">permitir instalar apps de esta fuente</span> (navegador o gestor de archivos): permítelo para esta instalación.</li>
+  <li>La app se llama <span class="lit">Deriva Sonora</span>.</li>
+  <li>La primera vez pide un <span class="lit">alias</span>: firma tus derivas. Si compartes una, es público, así que no tiene que ser tu nombre. Puedes seguir anónimo.</li>
+  <li>Acepta la <span class="lit">ubicación</span> (para dibujar tu recorrido) y el <span class="lit">micrófono</span> (para grabar). La app nunca usa la ubicación en segundo plano.</li>
+</ol>
+<h3>Derivar y grabar</h3>
+<ul>
+  <li>Abajo: <span class="k">◯ globo</span> · <span class="k">● GRABAR</span> · <span class="k">≡ derivas</span>; bajo grabar, <span class="k">▶ iniciar deriva</span>.</li>
+  <li>Espera a que arriba aparezca la precisión del GPS (<span class="lit">⌖ ±6 m</span>): un sonido necesita un lugar.</li>
+  <li><span class="k">● GRABAR</span> abre el micrófono; vuelve a tocarlo (<span class="k">■</span>) para parar (máximo 5 minutos). Si no habías iniciado una deriva, grabar la inicia.</li>
+  <li>Al parar, ponle nombre si quieres (¿qué escuchas?) y notas, y <span class="k">Guardar</span> o <span class="k">Descartar</span>.</li>
+  <li>Camina: tu recorrido se dibuja en <span class="lit">blanco</span>; tú eres el cuadrado que parpadea. <span class="k">⌖</span> vuelve a seguirte si moviste el mapa.</li>
+  <li><span class="k">■ terminar deriva</span> y dale un nombre. Si la app se cerró a mitad de camino, la deriva sigue donde iba.</li>
+</ul>
+<h3>Compartir</h3>
+<ul>
+  <li>Al terminar una deriva con sonidos, la app ofrece <span class="lit">compartirla al mapa global</span>; o después, desde <span class="k">≡ derivas</span>.</li>
+  <li>La primera vez explica qué se vuelve público: tu alias, el título y las horas, el recorrido (redondeado a cerca de un metro) y los sonidos con su nombre y notas. La bitácora anota que la compartiste.</li>
+  <li>En segundos es un punto blanco en el globo, para cualquiera.</li>
+  <li><span class="k">En el mapa global</span> → <span class="k">Sí</span> la quita del servidor (recorrido y sonidos) y de la bitácora. Borrar una deriva en la app también la quita.</li>
+  <li>Sin conexión, todo queda en el teléfono; compártela cuando haya red.</li>
+</ul>
+<h3>Escuchar a otros desde la app</h3>
+<ul>
+  <li>En el mapa de la app, las derivas compartidas cerca de ti aparecen <span class="lit">punteadas</span> y sus sonidos como cuadrados huecos: tócalos para escuchar.</li>
+  <li><span class="k">◯ globo</span> abre el mismo globo y anillos de la web; <span class="k">← Grabadora</span> vuelve.</li>
+</ul>
+
+<p class="note">Lo que no compartes no sale de tu teléfono. Sin cuentas, publicidad ni analítica. Una deriva compartida se puede quitar siempre.</p>
+<footer>Alpine Feminist Punk Parade · Deriva Sonora · permasoftware, 1 bit · tipografía Lugar Común (SIL OFL) · mapa © OpenStreetMap</footer>
+</body>
+</html>

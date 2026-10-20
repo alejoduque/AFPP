@@ -1,0 +1,34 @@
+# /etc/systemd/system/afpp.service
+[Unit]
+Description=AFPP — shared derives for the SoundWalk global map
+After=network.target
+
+[Service]
+Type=simple
+User=afpp
+Group=afpp
+WorkingDirectory=/opt/afpp
+# Derives and audio live in /var/lib/afpp (DATA_DIR), owned by afpp.
+StateDirectory=afpp
+StateDirectoryMode=0755
+Environment=DATA_DIR=/var/lib/afpp
+Environment=HOST=127.0.0.1
+Environment=PORT=8790
+EnvironmentFile=/etc/afpp/afpp.env
+ExecStart=/usr/bin/node /opt/afpp/server.js
+Restart=always
+RestartSec=2
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,118 @@
+{
+  "active": "afpp",
+  "sets": {
+    "squares": {
+      "about": "The plain 1-bit squares."
+    },
+    "marino": {
+      "about": "Marino: the body. You walk; a sound is a gesture (listening, crouching, reaching, lying, dancing, standing still); others are framed bodies; footprints for crumbs.",
+      "size": 40,
+      "sizes": {
+        "crumb": 26
+      },
+      "crumbEvery": 12,
+      "crumbSpacingPx": 22,
+      "me": {
+        "sprite": "me-walk.png",
+        "frames": 2,
+        "fps": 2
+      },
+      "sound": [
+        "sound-listen.png",
+        "sound-crouch.png",
+        "sound-reach.png",
+        "sound-lie.png",
+        "sound-dance.png",
+        "sound-still.png"
+      ],
+      "other": [
+        "other-listen.png",
+        "other-crouch.png",
+        "other-reach.png",
+        "other-lie.png",
+        "other-dance.png",
+        "other-still.png"
+      ],
+      "crumb": [
+        "crumb-left.png",
+        "crumb-right.png"
+      ]
+    },
+    "seraina": {
+      "about": "Seraina: local food. You are a sprout; a sound is what was foraged there (mushroom, berries, leaf, wild garlic, acorn, apple); others hollow; seeds for crumbs.",
+      "size": 40,
+      "sizes": {
+        "crumb": 26
+      },
+      "crumbEvery": 20,
+      "crumbSpacingPx": 28,
+      "me": {
+        "sprite": "me-sprout.png",
+        "frames": 2,
+        "fps": 1
+      },
+      "sound": [
+        "sound-mushroom.png",
+        "sound-berries.png",
+        "sound-leaf.png",
+        "sound-wild-garlic.png",
+        "sound-acorn.png",
+        "sound-apple.png"
+      ],
+      "other": [
+        "other-mushroom.png",
+        "other-berries.png",
+        "other-leaf.png",
+        "other-wild-garlic.png",
+        "other-acorn.png",
+        "other-apple.png"
+      ],
+      "crumb": [
+        "crumb-grain.png",
+        "crumb-bean.png",
+        "crumb-sunflower.png",
+        "crumb-pumpkin.png"
+      ]
+    },
+    "afpp": {
+      "about": "AFPP: both woven. You walk; a sound is what was found there; other walkers are framed bodies; crumbs alternate footprints and seeds.",
+      "size": 40,
+      "sizes": {
+        "crumb": 26
+      },
+      "crumbEvery": 15,
+      "crumbSpacingPx": 24,
+      "me": {
+        "sprite": "me-walk.png",
+        "frames": 2,
+        "fps": 2
+      },
+      "sound": [
+        "sound-mushroom.png",
+        "sound-berries.png",
+        "sound-leaf.png",
+        "sound-wild-garlic.png",
+        "sound-acorn.png",
+        "sound-apple.png"
+      ],
+      "other": [
+        "other-listen.png",
+        "other-crouch.png",
+        "other-reach.png",
+        "other-lie.png",
+        "other-dance.png",
+        "other-still.png"
+      ],
+      "crumb": [
+        "crumb-left-grain.png",
+        "crumb-grain.png",
+        "crumb-right-bean.png",
+        "crumb-bean.png",
+        "crumb-left-sunflower.png",
+        "crumb-sunflower.png",
+        "crumb-right-pumpkin.png",
+        "crumb-pumpkin.png"
+      ]
+    }
+  }
+}

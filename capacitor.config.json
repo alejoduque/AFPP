@@ -1,0 +1,29 @@
+{
+  "appId": "xyz.altred.permasoftware",
+  "appName": "Deriva Sonora",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#000000",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false,
+      "splashFullScreen": true,
+      "splashImmersive": true
+    },
+    "Permissions": {
+      "microphone": {
+        "name": "microphone",
+        "description": "Deriva Sonora records the sounds of your derive"
+      },
+      "location": {
+        "name": "location",
+        "description": "Deriva Sonora draws your derive and places its sounds on the map"
+      }
+    }
+  }
+}

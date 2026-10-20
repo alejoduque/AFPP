@@ -1,0 +1,783 @@
+/*
+ * AFPP — 1-bit, permacomputing: three tones, no gradients, no shadows,
+ * monospace, whole-step animations. Keep the tones in sync with palette.js.
+ */
+
+.afpp {
+  --ground: #000;
+  --ink: #9b4dff;
+  --lit: #fff;
+  --dim: #6a3bb0;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--ground);
+  color: var(--ink);
+  font: 13px/1.5 var(--mono);
+  letter-spacing: 0.02em;
+  overflow: hidden;
+}
+
+.afpp *,
+.afpp *::before,
+.afpp *::after {
+  box-sizing: border-box;
+}
+
+.afpp ::selection {
+  background: var(--ink);
+  color: var(--ground);
+}
+
+.afpp-dim { color: var(--dim); }
+.afpp-warn { color: var(--lit); animation: afpp-blink 1.2s steps(2, jump-none) infinite; }
+.is-lit, .afpp .is-lit { color: var(--lit); }
+
+.afpp-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.afpp-center {
+  margin: auto;
+  max-width: 32em;
+  padding: 16px;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ chrome */
+
+.afpp-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-bottom: 1px dashed var(--dim);
+  z-index: 3;
+}
+
+.afpp-head h1 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  color: var(--lit);
+}
+
+.afpp-lang { margin-left: auto; }
+
+.afpp-btn {
+  font: inherit;
+  color: var(--ink);
+  background: var(--ground);
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  padding: 3px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.afpp-btn:hover:not(:disabled),
+.afpp-btn:focus-visible {
+  background: var(--ink);
+  color: var(--ground);
+  outline: none;
+}
+
+.afpp-btn:disabled {
+  border-style: dashed;
+  color: var(--dim);
+  cursor: default;
+}
+
+.afpp-x {
+  font: inherit;
+  background: none;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.afpp-x:hover { color: var(--lit); }
+
+.afpp-main {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ------------------------------------------------------------------- globe */
+
+.afpp-globe {
+  position: absolute;
+  inset: 0;
+}
+
+.afpp-globe__canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  touch-action: none;
+  cursor: grab;
+}
+
+.afpp-globe__count {
+  position: absolute;
+  left: 16px;
+  bottom: 8px;
+  margin: 0;
+  color: var(--dim);
+  pointer-events: none;
+}
+
+.afpp-tip {
+  position: absolute;
+  transform: translate(12px, -50%);
+  background: var(--ground);
+  border: 1px solid var(--lit);
+  color: var(--lit);
+  padding: 2px 6px;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+/* The tracklog (GlobeView, tracklog.mjs): who walked, when, and where the playhead is. */
+.afpp-globe__play { position: absolute; right: 16px; bottom: 8px; }
+.afpp-tip--sound { border-color: var(--lit); animation: afpp-blink 0.8s steps(2, jump-none) 2; }
+
+.afpp-track {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+}
+.afpp-track > * { pointer-events: auto; }
+.afpp-track__who { margin: 0; color: var(--lit); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.afpp-track__who b { font-weight: normal; letter-spacing: 0.08em; }
+.afpp-track__live { color: var(--ground); background: var(--lit); padding: 0 4px; margin-left: 4px; animation: afpp-blink 1.2s steps(2, jump-none) infinite; }
+.afpp-track__bar { display: flex; align-items: center; gap: 8px; color: var(--ink); }
+.afpp-track__line { position: relative; flex: 1; height: 9px; border-bottom: 1px dashed var(--dim); }
+.afpp-track__tick { position: absolute; bottom: -3px; width: 1px; height: 7px; background: var(--ink); }
+.afpp-track__mark { position: absolute; bottom: -4px; width: 7px; height: 7px; margin-left: -3px; background: var(--lit); }
+.afpp-track__actions { display: flex; gap: 8px; }
+.afpp-track__actions .afpp-btn[aria-pressed='true'] { color: var(--ground); background: var(--lit); border-color: var(--lit); }
+
+@media (prefers-reduced-motion: reduce) {
+  .afpp-tip--sound,
+  .afpp-track__live { animation: none; }
+}
+
+/* --------------------------------------------------------------- local map */
+
+.afpp-local,
+.afpp-local__map {
+  position: absolute;
+  inset: 0;
+}
+
+.afpp-local__map {
+  background: var(--ground);
+}
+
+.afpp-local__map .afpp-tiles {
+  filter: url(#afpp-1bit);
+  image-rendering: pixelated;
+}
+
+.afpp .leaflet-container {
+  background: var(--ground);
+  font: inherit;
+}
+
+.afpp .leaflet-control-attribution {
+  background: var(--ground);
+  color: var(--dim);
+  font-size: 10px;
+}
+
+.afpp .leaflet-control-attribution a { color: var(--ink); }
+
+.afpp .leaflet-bar a {
+  background: var(--ground);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: 0;
+}
+
+.afpp .leaflet-bar { border: 0; box-shadow: none; }
+.afpp .leaflet-bar a:hover { background: var(--ink); color: var(--ground); }
+
+.afpp-local__bar {
+  position: absolute;
+  top: 8px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  z-index: 500;
+  pointer-events: none;
+}
+
+.afpp-local__bar > * { pointer-events: auto; }
+.afpp-local__bar > span { background: var(--ground); padding: 0 4px; }
+
+/* A sound: a small square, ink; white when selected, heard or in the rings. */
+.afpp-rec {
+  background: var(--ground);
+  border: 2px solid var(--ink);
+}
+
+.afpp-rec.is-selected { border-color: var(--lit); }
+.afpp-rec.is-mixed { background: var(--ink); }
+.afpp-rec.is-playing {
+  background: var(--lit);
+  border-color: var(--lit);
+  animation: afpp-blink 0.8s steps(2, jump-none) infinite;
+}
+
+.afpp-panel {
+  position: absolute;
+  top: 48px;
+  right: 16px;
+  width: min(360px, calc(100% - 32px));
+  max-height: calc(100% - 120px);
+  overflow: auto;
+  background: var(--ground);
+  border: 1px solid var(--lit);
+  padding: 8px 10px;
+  z-index: 600;
+}
+
+.afpp-panel header {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  color: var(--lit);
+}
+
+.afpp-panel header .afpp-x { margin-left: auto; }
+.afpp-panel p { margin: 0 0 6px; }
+
+.afpp-panel ul,
+.afpp-rings__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.afpp-panel li,
+.afpp-rings__list li {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 0;
+  border-top: 1px dashed var(--dim);
+}
+
+.afpp-panel__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.afpp-panel__name i { color: var(--dim); font-style: normal; }
+.afpp-btn--play { width: 2.2em; padding: 3px 0; text-align: center; }
+
+.afpp-now {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 16px;
+  border-top: 1px dashed var(--dim);
+  color: var(--lit);
+  z-index: 3;
+}
+
+/* ------------------------------------------------------------------- rings */
+
+/* The rings sit under the globe (or the map), open, centred: the satellites
+   orbit them. The handle folds them away. */
+.afpp-rings {
+  flex: 0 0 auto;
+  border-top: 1px solid var(--ink);
+  background: var(--ground);
+  z-index: 1000;
+}
+
+.afpp-stage-col {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.afpp-rings__handle {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  padding: 8px 16px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--ground);
+  border: 0;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.afpp-rings__handle .afpp-dim { margin-left: auto; }
+
+.afpp-rings__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0 16px 8px;
+}
+
+.afpp-rings__list {
+  flex: 1;
+  min-width: 220px;
+}
+
+.afpp-rings__list li > span:first-child { flex: 1; }
+
+.afpp-master {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: min(100%, 300px);
+  font-size: 11px;
+  color: var(--dim);
+}
+
+.afpp-master input { flex: 1; accent-color: var(--ink); }
+
+.afpp-stage {
+  position: relative;
+  width: min(100%, 44vh, 440px);
+  aspect-ratio: 1 / 1;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.afpp-stage__sonar {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.afpp-stage__dots { position: absolute; inset: 0; }
+
+.afpp-stage__empty {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  margin: 0;
+  text-align: center;
+  background: var(--ground);
+  padding: 4px;
+}
+
+/* Dots — Mestizaje's, recoloured: ink when waiting, light when in the mix. */
+.afpp-stage .dot {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+  transition: left 0.35s steps(6), top 0.35s steps(6);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.afpp-stage .dot::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  background: var(--ink);
+  box-shadow: 0 0 0 2px var(--ground);
+}
+
+.afpp-stage .dot--in::before {
+  width: 15px;
+  height: 15px;
+  margin: -7.5px 0 0 -7.5px;
+  background: var(--lit);
+}
+
+.afpp-stage .dot[data-state='connecting']::before {
+  animation: afpp-blink 0.8s steps(2, jump-none) infinite;
+}
+
+.afpp-stage .dot[data-state='error']::before {
+  background: var(--ground);
+  outline: 2px dashed var(--lit);
+}
+
+.afpp-stage .dot--drag {
+  cursor: grabbing;
+  transition: none;
+  z-index: 2;
+}
+
+.afpp-stage .dot__label {
+  position: absolute;
+  left: 34px;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 11em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: inherit;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--ground);
+  padding: 1px 4px;
+  pointer-events: none;
+}
+
+.afpp-stage .dot--in .dot__label { color: var(--lit); }
+.afpp-stage .dot--left .dot__label { left: auto; right: 34px; }
+.afpp-stage .dot:focus-visible { outline: 2px solid var(--lit); outline-offset: -8px; }
+
+@keyframes afpp-blink {
+  50% { opacity: 0.2; }
+}
+
+@media (max-width: 600px) {
+  .afpp-head { padding: 6px 16px; gap: 8px; }
+  .afpp-head h1 .afpp-dim { display: none; }
+  .afpp-panel { top: auto; bottom: 8px; max-height: 45%; }
+  .afpp-stage { width: 100%; }
+  .afpp-stage .dot__label,
+  .afpp-stage .dot--left .dot__label {
+    left: 50%;
+    right: auto;
+    top: 36px;
+    transform: translateX(-50%);
+    max-width: 9em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .afpp *,
+  .afpp *::before {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ───────────────────────────────────────── web: stage 60 % · chat 40 % */
+
+.afpp-split {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.afpp-links { display: flex; gap: 12px; margin-left: auto; }
+.afpp-links a { color: var(--ink); text-decoration: none; border-bottom: 1px dashed var(--ink); white-space: nowrap; }
+.afpp-links a:hover { color: var(--lit); border-color: var(--lit); }
+.afpp-links + .afpp-lang { margin-left: 0; }
+
+.afpp-chat {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-top: 1px solid var(--ink);
+  background: var(--ground);
+}
+
+.afpp-chat.is-open { flex: 0 0 40%; }
+
+.afpp-chat__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 16px;
+  border-bottom: 1px dashed var(--dim);
+}
+
+.afpp-chat__head a { color: var(--dim); text-decoration: none; font-size: 12px; }
+.afpp-chat__head a:hover { color: var(--lit); }
+.afpp-chat__toggle {
+  font: inherit;
+  color: var(--lit);
+  background: none;
+  border: 0;
+  padding: 0;
+  margin-right: auto;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+}
+
+.afpp-chat__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 16px;
+}
+
+.afpp-chat:not(.is-open) .afpp-chat__body { display: none; }
+
+/* the chat client's markup (public/chat/afpp-chat.js), in three tones */
+.afpp .chat { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
+.afpp .chat[hidden],
+.afpp .chat__join[hidden],
+.afpp .chat__say[hidden] { display: none; }
+.afpp .chat__join,
+.afpp .chat__say { display: flex; gap: 8px; }
+.afpp .chat__join input,
+.afpp .chat__say input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 16px;
+  color: var(--lit);
+  background: var(--ground);
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  padding: 6px 8px;
+}
+.afpp .chat__join input:focus,
+.afpp .chat__say input:focus { outline: none; border-color: var(--lit); }
+.afpp .chat__join input::placeholder,
+.afpp .chat__say input::placeholder { color: var(--dim); }
+.afpp .chat__status { margin: 0; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+.afpp .chat__status[data-state='error'] { color: var(--lit); }
+.afpp .chat__log {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-wrap: anywhere;
+}
+.afpp .chat__log li { padding: 2px 0; color: var(--lit); }
+.afpp .chat__time { color: var(--dim); margin-right: 6px; }
+.afpp .chat__nick { color: var(--ink); font-weight: bold; }
+.afpp .chat__nick::after { content: ' '; }
+.afpp .chat__log .is-self .chat__nick { color: var(--lit); }
+.afpp .chat__log .is-event,
+.afpp .chat__log .is-history { color: var(--dim); }
+.afpp .chat__log .is-action { font-style: italic; }
+.afpp .chat__at { display: none; }
+.afpp .chat__hint { margin: 0; color: var(--dim); font-size: 11px; }
+.afpp .chat__hint:empty { display: none; }
+.afpp-chat__note { margin: 0; font-size: 11px; }
+
+/*
+ * The assembly beside IRC (public/chat/afpp-assembly.js, KLAP's presence.js):
+ * KLAP's grammar (> who writes ::, // headings, a block caret blinking in
+ * whole steps, no colour coding) in AFPP's three tones.
+ */
+.afpp .chat__ghost { color: var(--dim); }
+.afpp .chat__ghost .chat__nick { color: var(--dim); font-weight: normal; }
+.afpp .chat__ghost .chat__nick::before { content: '> '; }
+.afpp .chat__ghost .chat__text { color: var(--ink); }
+.afpp .tbt-caret {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.1em;
+  margin: 0 1px;
+  vertical-align: text-bottom;
+  background: var(--lit);
+  animation: afpp-caret 1s steps(1) infinite;
+}
+.afpp .chat__ghost .tbt-caret { background: var(--ink); }
+@keyframes afpp-caret { 50% { opacity: 0; } }
+
+.afpp .live-strip { font-size: 11px; border-bottom: 1px dashed var(--dim); padding-bottom: 6px; }
+.afpp .live-strip[hidden] { display: none; }
+.afpp .strip-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
+.afpp .strip-head strong { color: var(--lit); font-weight: normal; letter-spacing: 0.1em; }
+.afpp .strip-head strong::before { content: '// '; color: var(--dim); }
+.afpp .strip-status { color: var(--dim); }
+.afpp .live-strip button {
+  font: inherit;
+  color: var(--ink);
+  background: none;
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  padding: 1px 6px;
+  cursor: pointer;
+}
+.afpp .live-strip button.link { border: 0; border-bottom: 1px dashed currentColor; padding: 0; }
+.afpp .live-strip button:hover,
+.afpp .live-strip button:focus-visible,
+.afpp .live-strip button[aria-pressed='true'] { color: var(--ground); background: var(--ink); outline: none; }
+.afpp .live-strip button.link:hover,
+.afpp .live-strip button.link:focus-visible { color: var(--lit); background: none; }
+.afpp .strip-toggle { margin-left: auto; }
+.afpp .strip-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 6px 0; }
+.afpp .strip-controls[hidden] { display: none; }
+.afpp .strip-name { display: none; } /* the IRC nick is the name */
+.afpp .cam-modes { display: flex; }
+.afpp .cam-modes button + button { border-left: 0; }
+.afpp .ascii-view,
+.afpp .strip-note { color: var(--dim); margin: 0; }
+.afpp .strip-note { flex-basis: 100%; }
+.afpp .strip-note.is-error { color: var(--lit); }
+.afpp .strip-tiles { display: flex; gap: 8px; overflow-x: auto; margin-top: 6px; }
+.afpp .tile { flex: 0 0 112px; }
+.afpp .tile-screen {
+  position: relative;
+  container-type: inline-size;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--ink);
+  overflow: hidden;
+  background: var(--ground);
+}
+.afpp .tile.is-me .tile-screen { border-style: dashed; }
+.afpp .tile.is-walking .tile-screen { border-color: var(--lit); }
+.afpp .tile-screen video,
+.afpp .tile-ascii,
+.afpp .tile-initial { position: absolute; inset: 0; width: 100%; height: 100%; }
+.afpp .tile-screen video { object-fit: cover; filter: grayscale(1) contrast(1.4); }
+.afpp .tile.is-me video { transform: scaleX(-1); }
+.afpp .tile-ascii {
+  margin: 0;
+  color: var(--lit);
+  background: var(--ground);
+  font: calc(100cqw / 72 / 0.6) / 1.15 var(--mono);
+  white-space: pre;
+  overflow: hidden;
+}
+.afpp .tile-initial { display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--ink); }
+/* hidden videos keep playing (opacity, not display) so they can be drawn as ascii */
+.afpp .tile video,
+.afpp .tile .tile-ascii,
+.afpp .tile .tile-initial { opacity: 0; }
+.afpp .tile[data-mode='video'] video,
+.afpp .tile[data-mode='ascii'] .tile-ascii,
+.afpp .tile[data-mode='ascii-local'] .tile-ascii,
+.afpp .tile[data-mode='off'] .tile-initial { opacity: 1; }
+.afpp .tile-caption { display: flex; flex-wrap: wrap; gap: 0 6px; padding-top: 2px; }
+.afpp .tile-name { color: var(--lit); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.afpp .tile-mic { color: var(--dim); }
+.afpp .tile-mic::before { content: ':: '; }
+.afpp .tile-mic.is-on { color: var(--lit); }
+.afpp .tile-writing { color: var(--ink); }
+.afpp .tile-walking { color: var(--lit); flex-basis: 100%; animation: afpp-blink 1.6s steps(2, jump-none) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .afpp .tbt-caret,
+  .afpp .tile-walking { animation: none; }
+}
+
+/* Wide screens: the chat is a column on the right. */
+@media (min-width: 820px) {
+  .afpp.has-chat .afpp-split { flex-direction: row; }
+  .afpp.has-chat .afpp-chat { border-top: 0; border-left: 1px solid var(--ink); }
+}
+
+@media (max-width: 600px) {
+  .afpp-head h1 { white-space: nowrap; font-size: 12px; letter-spacing: 0.12em; }
+  .afpp-links { gap: 8px; font-size: 11px; }
+  .afpp--web .afpp-head { gap: 8px; padding: 6px 12px; }
+  .afpp-chat__note { display: none; } /* room for the conversation on a phone */
+}
+
+/* Glyph sets (src/afpp/glyphs.js, /kit/): 1-bit PNGs in ink. Lit = white. */
+.afpp-glyph { image-rendering: pixelated; }
+.afpp-glyph.is-playing,
+.afpp-glyph.is-selected { filter: brightness(0) invert(1); }
+.afpp-glyph.is-playing { animation: afpp-blink 0.8s steps(2, jump-none) infinite; }
+.afpp-glyph--me:not(.afpp-glyph--sprite) { animation: afpp-blink 1.6s steps(2, jump-none) infinite; }
+
+/* `me` as a sprite strip: frames side by side, stepped through, never eased. */
+.afpp-glyph--sprite { background: none; border: 0; }
+.afpp-glyph--sprite i {
+  display: block;
+  width: var(--size);
+  height: var(--size);
+  background-repeat: no-repeat;
+  background-size: calc(var(--size) * var(--frames)) var(--size);
+  image-rendering: pixelated;
+  animation: afpp-sprite var(--dur) steps(var(--frames)) infinite;
+}
+@keyframes afpp-sprite { to { background-position-x: calc(-1 * var(--size) * var(--frames)); } }
+@media (prefers-reduced-motion: reduce) { .afpp-glyph--sprite i { animation: none; } }
+.afpp-glyph--crumb { opacity: 0.9; }
+
+/* Satellites: parked sounds orbit the rings; their name shows on hover or focus. */
+.afpp-stage .dot--sat { transition: none; }
+.afpp-stage .dot--sat .dot__label { opacity: 0; transition: opacity 0.2s steps(2); }
+.afpp-stage .dot--sat:hover .dot__label,
+.afpp-stage .dot--sat:focus-visible .dot__label,
+.afpp-stage .dot--drag .dot__label { opacity: 1; }
+.afpp-stage .dot--sat::before { width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; }
+
+/* Phones, and the app's globe view: smaller rings so the globe keeps room. */
+@media (max-height: 760px), (max-width: 600px) {
+  .afpp-stage { width: min(100%, 34vh, 360px); }
+}
+.afpp-globe__count { bottom: 4px; }
+
+.afpp-narrow { display: none; }
+@media (max-width: 600px) {
+  .afpp-wide { display: none; }
+  .afpp-narrow { display: inline; }
+}
+
+/* The AFPP lettering in the header, and the ticker under it. */
+.afpp-head h1.afpp-brand { display: flex; align-items: center; gap: 10px; letter-spacing: 0; }
+.afpp-brand img { display: block; height: 40px; width: auto; image-rendering: pixelated; }
+.afpp-brand__sub { font-size: 11px; letter-spacing: 0.2em; color: var(--lit); }
+.afpp-ticker {
+  display: block;
+  width: 100%;
+  height: 48px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  border-bottom: 1px dashed var(--dim);
+  flex: 0 0 auto;
+}
+@media (max-width: 600px) {
+  .afpp-brand img { height: 32px; }
+  .afpp-brand__sub { display: none; }
+}
+.perma .afpp-brand img { height: 30px; }
+.perma .afpp-brand__sub { display: inline; font-size: 10px; }

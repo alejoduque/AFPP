@@ -1,0 +1,254 @@
+/*
+ * Deriva Sonora, the field screen. Builds on ../afpp/theme.css (the .afpp
+ * tokens: ground, ink, lit, dim). Three tones, square corners, monospace,
+ * whole-step blinking. The Android activity already keeps everything inside
+ * the system bars; env(safe-area-*) covers browsers and iOS.
+ */
+
+html, body { background: #000; }
+
+.afpp.perma {
+  padding-bottom: 0;
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+.perma-splash {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.perma-splash img {
+  width: min(100vw, 56vh);
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.perma-gps { margin-left: auto; font-size: 12px; }
+.perma .afpp-lang { margin-left: 0; }
+
+.perma-map { position: absolute; inset: 0; }
+
+.perma-recenter {
+  position: absolute;
+  right: 12px;
+  bottom: 44px;
+  z-index: 500;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  padding: 0;
+}
+
+.perma-status {
+  position: absolute;
+  left: 12px;
+  bottom: 8px;
+  right: 64px;
+  margin: 0;
+  z-index: 500;
+  pointer-events: none;
+}
+
+.perma-status > span,
+.perma-status { text-shadow: 0 0 0 #000; }
+.perma-status span { background: var(--ground); padding: 0 4px; }
+
+.perma-notice {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 8px;
+  z-index: 600;
+  margin: 0;
+  padding: 6px 8px;
+  background: var(--ground);
+  border: 1px solid var(--lit);
+  color: var(--lit);
+}
+
+/* Markers: squares. Yours ink, others' hollow, you white. */
+.perma-rec {
+  background: var(--ink);
+  border: 2px solid var(--ground);
+  outline: 1px solid var(--ink);
+}
+.perma-rec--other { background: var(--ground); border-color: var(--ink); outline: none; }
+.perma-rec.is-playing { background: var(--lit); outline-color: var(--lit); animation: afpp-blink 0.8s steps(2, jump-none) infinite; }
+.perma-me {
+  background: var(--lit);
+  border: 3px solid var(--ground);
+  outline: 2px solid var(--lit);
+  animation: afpp-blink 1.6s steps(2, jump-none) infinite;
+}
+
+/* ─────────────────────────────────────────── the bar: globe · mic · derives */
+
+.perma-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0));
+  border-top: 1px solid var(--ink);
+  background: var(--ground);
+  z-index: 5;
+}
+
+.perma-bar__side {
+  flex: 0 0 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.perma-bar__side span {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.perma-bar__center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.perma-mic {
+  font: inherit;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  min-height: 56px;
+  color: var(--ground);
+  background: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.perma-mic.is-rec {
+  color: var(--ground);
+  background: var(--lit);
+  border-color: var(--lit);
+  animation: afpp-blink 1.2s steps(2, jump-none) infinite;
+}
+
+.perma-mic:disabled { opacity: 0.4; }
+
+.perma-derive {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 6px;
+}
+
+/* ───────────────────────────────────────────────────────────── sheets */
+
+.perma-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  background: var(--ground);
+  border-top: 2px solid var(--lit);
+  padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 80vh;
+  overflow: auto;
+}
+
+.perma-sheet header { display: flex; align-items: baseline; color: var(--lit); }
+.perma-sheet header .afpp-x { margin-left: auto; font-size: 18px; }
+.perma-sheet p { margin: 0; }
+
+.perma-input {
+  font: inherit;
+  font-size: 16px; /* no zoom-on-focus in mobile browsers */
+  color: var(--lit);
+  background: var(--ground);
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  padding: 8px;
+  width: 100%;
+  resize: vertical;
+}
+
+.perma-input:focus { outline: none; border-color: var(--lit); }
+.perma-input::placeholder { color: var(--dim); }
+
+.perma-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.perma-sheet .perma-row { justify-content: flex-end; }
+.perma-primary { background: var(--ink); color: var(--ground); font-weight: bold; }
+.perma-primary:hover:not(:disabled) { background: var(--lit); border-color: var(--lit); }
+
+.perma-share p { margin: 4px 0; }
+.perma-share .is-shared { background: var(--ink); color: var(--ground); }
+
+/* ──────────────────────────────────────────────────────── your derives */
+
+.perma-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 1500;
+  background: var(--ground);
+  overflow: auto;
+  padding: 8px 16px 24px;
+}
+
+.perma-panel header {
+  display: flex;
+  align-items: baseline;
+  color: var(--lit);
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--dim);
+}
+
+.perma-panel header .afpp-x { margin-left: auto; font-size: 18px; }
+.perma-panel ul { list-style: none; margin: 0; padding: 0; }
+.perma-panel li {
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--dim);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.perma-panel__title b { color: var(--lit); }
+
+/* The globe inside the app: AfppApp is its own .afpp screen. */
+.perma-globe .afpp { padding-top: env(safe-area-inset-top, 0); }
+
+/* ◍ live (liveWalk.js): the derive streamed while it is walked */
+.perma-live {
+  font: inherit;
+  color: var(--ink);
+  background: var(--ground);
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  padding: 0 6px;
+  margin-left: 6px;
+  cursor: pointer;
+  pointer-events: auto; /* the status line lets the map be dragged through it; this button is the exception */
+}
+.perma-live.is-on { color: var(--ground); background: var(--lit); border-color: var(--lit); }
+.perma-live.is-on.is-waiting { animation: afpp-blink 1.2s steps(2, jump-none) infinite; }
+.perma-check { display: flex; gap: 8px; align-items: center; margin: 6px 0; color: var(--lit); }
+@media (prefers-reduced-motion: reduce) {
+  .perma-live.is-on.is-waiting { animation: none; }
+}

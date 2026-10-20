@@ -1,0 +1,15 @@
+{
+  "name": "Deriva Sonora",
+  "short_name": "Deriva Sonora",
+  "description": "Listen to the derives walkers share from around the planet, and mix them in the rings.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "lang": "es",
+  "icons": [
+    { "src": "deriva-icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "afpp-server",
+  "version": "0.1.0",
+  "description": "AFPP — shared derive server for the SoundWalk global map. No dependencies.",
+  "private": true,
+  "type": "module",
+  "main": "server.js",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/*.test.mjs"
+  },
+  "license": "CC-BY-NC-SA-4.0"
+}

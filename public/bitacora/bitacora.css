@@ -1,0 +1,48 @@
+/* The AFPP bitácora: purple on black, 1-bit. Tones as in the globe and the app. */
+@font-face { font-family: 'Lugar Comun'; src: url(../fonts/LugarComun-Regular.woff2) format('woff2'); font-display: swap; }
+:root { --ground: #000; --ink: #9b4dff; --lit: #fff; --dim: #6a3bb0; --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+* { box-sizing: border-box; }
+html { background: var(--ground); }
+body { margin: 0 auto; max-width: 46rem; padding: 0 16px 64px; background: var(--ground); color: var(--ink); font: 15px/1.55 var(--mono); }
+::selection { background: var(--ink); color: var(--ground); }
+a { color: var(--lit); text-decoration: none; border-bottom: 1px dashed var(--ink); }
+a:hover { border-bottom-color: var(--lit); }
+
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px dashed var(--dim); position: sticky; top: 0; background: var(--ground); z-index: 1; }
+.top b { color: var(--lit); letter-spacing: 0.25em; }
+.top nav { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-left: auto; font-size: 13px; }
+#lang { font: inherit; color: var(--ink); background: var(--ground); border: 1px solid var(--ink); border-radius: 0; padding: 2px 4px; }
+
+.art { margin: 24px auto 0; max-width: 32rem; border: 0; }
+.art img { display: block; width: 100%; height: auto; image-rendering: pixelated; }
+
+h1 { font-family: 'Lugar Comun', var(--mono); font-weight: normal; color: var(--lit); font-size: 2.6rem; line-height: 1; margin: 0.8em 0 0.1em; letter-spacing: 0.04em; }
+.sub { margin: 0 0 1.2em; color: var(--ink); letter-spacing: 0.2em; text-transform: uppercase; font-size: 13px; }
+.lede { max-width: 40rem; }
+.hint { color: var(--dim); font-size: 13px; margin: 0.3em 0; }
+
+.dia { margin-top: 2em; }
+.dia h2 { font-family: 'Lugar Comun', var(--mono); font-weight: normal; color: var(--lit); font-size: 1.2rem; margin: 0 0 0.4em; padding-top: 0.6em; border-top: 1px dashed var(--dim); text-transform: capitalize; }
+.dia ol { list-style: none; margin: 0; padding: 0; }
+.ev { display: grid; grid-template-columns: 3.4em auto 1fr; gap: 0 10px; padding: 3px 0; overflow-wrap: anywhere; }
+.ev time { color: var(--dim); }
+.ev--chat .nick { color: var(--ink); font-weight: bold; }
+.ev--chat .texto { color: var(--lit); }
+.tbt-play { font: inherit; font-size: 11px; color: var(--dim); background: none; border: 0; padding: 0 2px; cursor: pointer; }
+.tbt-play:hover, .tbt-play:focus-visible { color: var(--lit); outline: none; }
+.tbt-caret { display: inline-block; width: 0.6em; height: 1.1em; margin: 0 1px; vertical-align: text-bottom; background: var(--lit); animation: caret 1s steps(1) infinite; }
+@keyframes caret { 50% { opacity: 0; } }
+.ev--deriva { margin: 4px 0; }
+.ev--deriva .tag { color: var(--ground); background: var(--ink); padding: 0 4px; height: fit-content; }
+.ev--deriva .texto { color: var(--lit); }
+.ev.is-new { animation: blink 0.8s steps(2, jump-none) 3; }
+.files { font-size: 12px; color: var(--dim); }
+.files a { color: var(--dim); }
+
+footer { margin-top: 3em; padding-top: 12px; border-top: 1px dashed var(--dim); font-size: 12px; color: var(--dim); }
+
+@keyframes blink { 50% { opacity: 0.2; } }
+@media (prefers-reduced-motion: reduce) { .ev.is-new, .tbt-caret { animation: none; } }
+@media (max-width: 520px) { body { font-size: 14px; } h1 { font-size: 2rem; } .ev { grid-template-columns: 3.2em 1fr; } .ev .texto { grid-column: 2; } }
+
+.afpp-ticker { display: block; width: 100%; height: 48px; image-rendering: pixelated; border-bottom: 1px dashed var(--dim); }

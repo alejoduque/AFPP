@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Publishing Wizard — SoundWalk · DerivaSonora</title>
+<meta name="description" content="Step-by-step guide for publishing SoundWalk to Google Play, Gumroad and Ko-fi.">
+<style>
+  :root { --bg:#f4f1ea; --fg:#1e211c; --dim:#5c6157; --acc:#4a7c3a; --line:#c9c4b6; --warn:#a8562e; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#1a1c18; --fg:#d8d5cc; --dim:#8f948a; --acc:#9dc04c; --line:#3a3d36; --warn:#e0965f; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0 auto; padding:1.5rem 1rem 3rem; max-width:68ch;
+         background:var(--bg); color:var(--fg);
+         font:1rem/1.6 system-ui, -apple-system, sans-serif; }
+  h1 { font-family:ui-monospace, monospace; font-size:1.3rem; margin:0 0 .3rem; }
+  h2 { font-family:ui-monospace, monospace; font-size:1.1rem; margin:2.4rem 0 .6rem;
+       border-bottom:1px dashed var(--line); padding-bottom:.3rem; }
+  a { color:var(--acc); }
+  ul, ol { padding-left:1.2rem; } li { margin:.35rem 0; }
+  code { font-family:ui-monospace, monospace; font-size:.9em;
+         background:color-mix(in srgb, var(--fg) 8%, transparent); padding:.05rem .3rem; border-radius:2px; }
+  .tag { color:var(--dim); font-size:.9rem; }
+  .warn { color:var(--warn); }
+  details { border:1px solid var(--line); border-radius:3px; margin:.6rem 0; padding:.2rem .8rem; }
+  details[open] { padding-bottom:.8rem; }
+  summary { cursor:pointer; padding:.5rem 0; font-weight:600; }
+  summary input { margin-right:.55rem; transform:scale(1.15); accent-color:var(--acc); }
+  #progress { font-family:ui-monospace, monospace; color:var(--dim); }
+  footer { margin-top:3rem; border-top:1px dashed var(--line); padding-top:1rem;
+           font-size:.85rem; color:var(--dim); }
+</style>
+</head>
+<body>
+
+<p><a href="index.html">← SoundWalk · DerivaSonora</a></p>
+
+<h1>Publishing Wizard</h1>
+<p class="tag">A guided path from “two signed AABs on my laptop” to “published”.
+Tick the boxes as you go — this page remembers your progress (stored only in
+your own browser). <span id="progress"></span></p>
+
+<p><strong>What you already have</strong> (from the repo, all verified):
+signed release bundles via <code>./build_paid.sh</code> and
+<code>./build_free.sh</code>, sideload APKs via <code>--apk</code>, listing
+copy + data-safety answers in <code>STORE_LISTING.md</code>, and this site's
+<a href="privacy.html">privacy policy</a> to use as the required public URL.</p>
+
+<h2>Part 0 — Before anything</h2>
+
+<details><summary><input type="checkbox">Back up <code>release.keystore</code> off this computer</summary>
+<p>Copy <code>android/app/release.keystore</code> (plus the passwords in
+<code>android/local.properties</code>) to at least two safe places — an
+encrypted USB stick and a password manager note, for example. <span
+class="warn">If this file is lost, neither app can ever be updated again.</span></p>
+</details>
+
+<details><summary><input type="checkbox">Host this site somewhere (gives you the privacy-policy URL Play requires)</summary>
+<p>These four files (<code>index.html</code>, <code>privacy.html</code>,
+<code>publish-guide.html</code>, <code>soundwalk-1bit.png</code>) are a complete
+static site — all links are relative, so drop them on <em>any</em> web host and
+they work. What Play Console actually needs is a public URL for
+<code>privacy.html</code>.</p>
+<p>Free / cheap options that host a plain folder of files:</p>
+<ul>
+  <li><strong>Netlify Drop</strong> — <a href="https://app.netlify.com/drop">app.netlify.com/drop</a>:
+      literally drag the folder onto the page; instant URL, no account needed to try.</li>
+  <li><strong>Cloudflare Pages</strong> — free, upload the folder or connect a repo.</li>
+  <li><strong>Codeberg Pages</strong> — free static hosting for public repos, no cost, fits the ethos.</li>
+  <li><strong>GitHub Pages</strong> — free for <em>public</em> repos (repo Settings →
+      Pages → branch <code>main</code>, folder <code>/docs</code>). Only private
+      repos need a paid plan.</li>
+  <li><strong>Your own web space</strong> — e.g. under the
+      <code>etc.altred.xyz</code> domain: upload the folder via FTP/SFTP.</li>
+</ul>
+<p>Once hosted, note the full URL of <code>privacy.html</code> (for example
+<code>https://etc.altred.xyz/soundwalk/privacy.html</code>) — that's the
+privacy-policy URL Play Console asks for, and the one to paste into
+<code>STORE_LISTING.md</code>. Then update the four store/donation links in
+<code>index.html</code> once those exist.</p>
+</details>
+
+<h2>Part 1 — Google Play developer account</h2>
+
+<details><summary><input type="checkbox">Create the developer account (US$25, one time)</summary>
+<ol>
+  <li>Go to <a href="https://play.google.com/console/signup">play.google.com/console/signup</a>
+      and sign in with the Google account you want to own the apps (use one you
+      will keep long-term).</li>
+  <li>Choose <strong>“Yourself”</strong> (personal account) unless you have a
+      registered organization. Pay the US$25 one-time fee.</li>
+  <li>Complete <strong>identity verification</strong> (government ID + address).
+      This can take from hours to a few days — start it early.</li>
+</ol>
+</details>
+
+<details><summary><input type="checkbox">Understand the closed-testing requirement (plan for it!)</summary>
+<p><span class="warn">Important:</span> new <em>personal</em> developer accounts
+must run a <strong>closed test</strong> — a group of testers (Google has
+required 12–20; the Console shows your exact number) who opt in and keep the
+app for <strong>14 continuous days</strong> — before you can apply for
+production (public) access.</p>
+<p>This is actually an opportunity: recruit testers from the MANAKAI community,
+students, and fellow artists. They only need a Gmail address and an Android
+phone. Fourteen days of real soundwalks is also excellent field testing.</p>
+</details>
+
+<details><summary><input type="checkbox">Set up the payments profile (only needed for the paid app)</summary>
+<p>To charge money for the full version, Play Console → <em>Setup → Payments
+profile</em> → create a Google Payments <strong>merchant account</strong>
+(supported for sellers in Colombia). You'll enter tax/bank details; Google pays
+out monthly. You can postpone this: publish the <strong>free</strong> app
+first, add the paid one when the merchant profile is ready. (Google's service
+fee is 15% for the first US$1M/year once you enroll in the 15% tier.)</p>
+</details>
+
+<h2>Part 2 — The Free app first (easier, no payments)</h2>
+<p class="tag">Do the free app first: it exercises the whole pipeline without
+the merchant setup, and it's the one for the closed test.</p>
+
+<details><summary><input type="checkbox">Create the app in Play Console</summary>
+<ol>
+  <li>Play Console → <strong>Create app</strong>.</li>
+  <li>Name: <code>SoundWalk Free</code> · default language: English (US) — you'll
+      add Spanish as a translation. App (not game) · <strong>Free</strong>.</li>
+  <li>Accept the declarations and create.</li>
+</ol>
+</details>
+
+<details><summary><input type="checkbox">Fill “App content” (the compliance checklist)</summary>
+<p>Console sidebar → <em>Policy → App content</em>. Work through each item —
+all the answers are already written in <code>STORE_LISTING.md</code>:</p>
+<ul>
+  <li><strong>Privacy policy</strong>: <code>https://alejoduque.github.io/BioMapp/privacy.html</code></li>
+  <li><strong>App access</strong>: “All functionality is available without special access” (no login).</li>
+  <li><strong>Ads</strong>: No ads.</li>
+  <li><strong>Content rating</strong>: fill the IARC questionnaire honestly
+      (no violence/sex/gambling/user chat) → rating “Everyone”.</li>
+  <li><strong>Target audience</strong>: choose <strong>13 and older</strong>.
+      (Selecting under-13 triggers the much stricter Families program — not
+      needed; teens + adults covers the community use.)</li>
+  <li><strong>News app</strong>: No. <strong>COVID app</strong>: No.
+      <strong>Government app</strong>: No. <strong>Financial features</strong>: None.</li>
+  <li><strong>Data safety</strong>: declare that <strong>no data is collected
+      or shared</strong> — mic and location are processed on-device only, never
+      transmitted. Deletion = in-app delete or uninstall. (Exact wording in
+      <code>STORE_LISTING.md</code>.)</li>
+</ul>
+</details>
+
+<details><summary><input type="checkbox">Create the store listing (EN + ES)</summary>
+<ol>
+  <li><em>Grow → Store presence → Main store listing</em>: paste title, short
+      and full description from <code>STORE_LISTING.md</code> (FREE — English).</li>
+  <li>Add a translation: <em>Manage translations → Spanish (Latin America)</em>
+      and paste the DerivaSonora Free texts.</li>
+  <li>Upload assets: 512×512 icon, 1024×500 feature graphic, and at least 2
+      phone screenshots per language. Phone screenshots of the real app are
+      fine (landing, map with markers, recorder with species chips, player).</li>
+</ol>
+</details>
+
+<details><summary><input type="checkbox">Upload the AAB to Internal testing</summary>
+<ol>
+  <li>Build fresh: <code>./build_free.sh</code> → produces
+      <code>soundwalk-free-2.3.0-*.aab</code>.</li>
+  <li><em>Test and release → Testing → Internal testing → Create new
+      release</em>. When asked, accept <strong>Play App Signing</strong>
+      (Google holds the app signing key; your keystore becomes the upload
+      key — this protects you if the keystore is ever lost <em>after</em>
+      enrollment).</li>
+  <li>Upload the <code>.aab</code>, add release notes (one line is fine), save.</li>
+  <li>Add your own Gmail to the internal testers list, open the opt-in link on
+      your phone, and install from Play. If this works, the whole signing
+      pipeline is proven.</li>
+</ol>
+</details>
+
+<details><summary><input type="checkbox">Run the closed test (the 14 days)</summary>
+<ol>
+  <li><em>Testing → Closed testing → Create track</em>, promote the internal
+      release into it.</li>
+  <li>Create an email list of testers (Gmail addresses) and share the opt-in
+      link. You need the number shown in your Console (12–20) opted in.</li>
+  <li>Keep the test running <strong>14 continuous days</strong>. Encourage real
+      use — soundwalks, imports, both languages.</li>
+  <li>When Console shows the requirement met, click <strong>Apply for
+      production access</strong> and answer the short questions about your
+      testing.</li>
+</ol>
+</details>
+
+<details><summary><input type="checkbox">Publish Free to production</summary>
+<ol>
+  <li><em>Production → Create new release</em> → promote the tested release.</li>
+  <li>Select countries (all, or start with the Americas + Spain).</li>
+  <li>Submit for review. First reviews typically take 1–7 days.</li>
+  <li>When live, copy the real store URL
+      (<code>https://play.google.com/store/apps/details?id=com.soundwalk.recorder.free</code>)
+      into <code>docs/index.html</code>, replacing the placeholder.</li>
+</ol>
+</details>
+
+<h2>Part 3 — The Paid app</h2>
+
+<details><summary><input type="checkbox">Create “SoundWalk” (paid) and set the price</summary>
+<ol>
+  <li>Requires the merchant/payments profile from Part 1.</li>
+  <li><strong>Create app</strong> → name <code>SoundWalk</code> → <strong>Paid</strong>.</li>
+  <li>Repeat the same App content + store listing steps (use the PAID texts in
+      <code>STORE_LISTING.md</code>).</li>
+  <li>Build with <code>./build_paid.sh</code>, upload
+      <code>soundwalk-paid-2.3.0-*.aab</code>, test internally, then release.</li>
+  <li><em>Monetize → Products → App pricing</em>: set the price (you can change
+      a price later; you can make a paid app free later, but <span
+      class="warn">never free → paid</span>).</li>
+  <li>When live, update the Play links in <code>docs/index.html</code>
+      and the upgrade deep-link already baked into the free app will resolve
+      (<code>market://details?id=com.soundwalk.recorder</code>).</li>
+</ol>
+<p class="tag">Note: your account being new, the paid app may also need its own
+closed-testing period — the Console will tell you. The same tester group can
+be reused.</p>
+</details>
+
+<h2>Part 4 — Gumroad (sell the APK directly, no store)</h2>
+
+<details><summary><input type="checkbox">Set up a Gumroad product for the full APK</summary>
+<p>Gumroad lets you sell the full-version APK directly — aligned with the
+permacomputing/artist-economy spirit, no store review, and buyers anywhere
+Play doesn't reach. It complements (not replaces) the Play listing.</p>
+<ol>
+  <li>Create an account at <a href="https://gumroad.com">gumroad.com</a>
+      (payouts to Colombia work via PayPal — connect it in Settings →
+      Payments; check their current fee, roughly 10% + payment costs).</li>
+  <li><strong>New product → Digital product</strong>. Name: “SoundWalk —
+      full version (Android APK)”. Upload
+      <code>soundwalk-paid-2.3.0-*.apk</code> (the <code>--apk</code> build,
+      <em>not</em> the .aab — only APKs can be installed directly).</li>
+  <li>Price it (Gumroad also supports “pay what you want” with a minimum —
+      a nice fit for community distribution).</li>
+  <li>In the product description, include sideloading instructions:
+      <em>“Download on your Android phone → open the file → allow ‘install
+      unknown apps’ when prompted → install.”</em></li>
+  <li>Copy the product URL into <code>docs/index.html</code>.</li>
+</ol>
+<p class="tag">Trade-off to know: Gumroad buyers don't get automatic updates —
+when you release a new version, upload the new APK to the product and use
+Gumroad's “email customers” feature. Also keep the APK version identical to
+the Play one so both install bases stay in sync.</p>
+</details>
+
+<h2>Part 5 — Ko-fi (support the work)</h2>
+
+<details><summary><input type="checkbox">Set up Ko-fi</summary>
+<ol>
+  <li>Create a page at <a href="https://ko-fi.com">ko-fi.com</a> — one-off
+      donations are fee-free on Ko-fi's side (only PayPal/Stripe processing
+      fees; check current terms).</li>
+  <li>Write a short bio connecting the app to the research: soundwalks,
+      bioacoustics, MANAKAI, youth conservation. People support stories, and
+      this one is genuinely good.</li>
+  <li>Optional: Ko-fi <em>Shop</em> can also deliver the APK as a digital
+      download, or a membership tier can offer early builds — an alternative
+      or complement to Gumroad.</li>
+  <li>Copy your Ko-fi URL into <code>docs/index.html</code>.</li>
+</ol>
+</details>
+
+<h2>Part 6 — After launch</h2>
+
+<details><summary><input type="checkbox">Replace all placeholder links on the site</summary>
+<p>Edit <code>docs/index.html</code>: swap the four <code>href="#"</code>
+placeholders for the real Play, Gumroad and Ko-fi URLs and remove the
+<code>class="soon"</code> / ⏳ marks. Commit and push — Pages redeploys
+automatically.</p>
+</details>
+
+<details><summary><input type="checkbox">Releasing updates</summary>
+<ol>
+  <li>Bump <code>versionCode</code>/<code>versionName</code> in
+      <code>android/app/build.gradle</code> (scheme:
+      <code>MAJOR*10000 + MINOR*100 + PATCH</code>) and <code>VERSION</code>.</li>
+  <li><code>./build_free.sh</code> and <code>./build_paid.sh</code> → upload
+      both AABs to their Console tracks.</li>
+  <li>Update the Gumroad APK + notify customers.</li>
+  <li>Add a CHANGELOG entry.</li>
+</ol>
+</details>
+
+<h2>Aside — why not F-Droid?</h2>
+<p class="tag">F-Droid would fit the permacomputing ethos, but it requires a
+free/open-source license and the code is CC BY-NC-SA (the NonCommercial clause
+disqualifies it). If you ever relicense (e.g. AGPL), F-Droid becomes an
+option.</p>
+
+<footer>
+<p>Handmade HTML · the checklist state lives only in your browser's
+localStorage · no cookies, no tracking.</p>
+</footer>
+
+<script>
+// Progressive enhancement: remember checkbox state locally.
+(function () {
+  var boxes = document.querySelectorAll('summary input[type=checkbox]');
+  var progress = document.getElementById('progress');
+  function update() {
+    var done = 0;
+    boxes.forEach(function (b) { if (b.checked) done++; });
+    if (progress) progress.textContent = '[' + done + '/' + boxes.length + ' done]';
+  }
+  boxes.forEach(function (box, i) {
+    var key = 'sw-publish-' + i;
+    try { box.checked = localStorage.getItem(key) === '1'; } catch (e) {}
+    box.addEventListener('click', function (e) { e.stopPropagation(); });
+    box.addEventListener('change', function () {
+      try { localStorage.setItem(key, box.checked ? '1' : '0'); } catch (e) {}
+      update();
+    });
+  });
+  update();
+})();
+</script>
+
+</body>
+</html>

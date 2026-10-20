@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SoundWalk · DerivaSonora</title>
+<meta name="description" content="SoundWalk / DerivaSonora — record, map and listen to the sounds of your territory. A soundwalk instrument and a community bioacoustics tool.">
+<style>
+  :root { --bg:#f4f1ea; --fg:#1e211c; --dim:#5c6157; --acc:#4a7c3a; --line:#c9c4b6; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#1a1c18; --fg:#d8d5cc; --dim:#8f948a; --acc:#9dc04c; --line:#3a3d36; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0 auto; padding:1.5rem 1rem 3rem; max-width:62ch;
+         background:var(--bg); color:var(--fg);
+         font:1rem/1.6 system-ui, -apple-system, sans-serif; }
+  h1 { font-family:ui-monospace, monospace; font-size:1.5rem; letter-spacing:.06em; margin:0; }
+  h2 { font-family:ui-monospace, monospace; font-size:1.05rem; margin:2.2rem 0 .6rem;
+       border-bottom:1px dashed var(--line); padding-bottom:.3rem; }
+  a { color:var(--acc); }
+  ul { padding-left:1.2rem; } li { margin:.3rem 0; }
+  .tag { color:var(--dim); font-size:.9rem; }
+  .es { color:var(--dim); }
+  .get a { display:inline-block; border:1px solid var(--acc); padding:.45rem .8rem;
+           margin:.25rem .35rem .25rem 0; text-decoration:none; border-radius:2px; }
+  .get a:hover { background:var(--acc); color:var(--bg); }
+  .soon { opacity:.55; pointer-events:none; }
+  .logo { display:block; width:100%; max-width:300px; height:auto; margin:0 0 .5rem; }
+  @media (prefers-color-scheme: dark) { .logo { filter:invert(1); } }
+  .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+             overflow:hidden; clip:rect(0,0,0,0); border:0; }
+  footer { margin-top:3rem; border-top:1px dashed var(--line); padding-top:1rem;
+           font-size:.85rem; color:var(--dim); }
+  hr { border:0; border-top:1px dashed var(--line); margin:2rem 0; }
+</style>
+</head>
+<body>
+
+<header>
+<img class="logo" src="soundwalk-1bit.png" width="560" height="513"
+     alt="SoundWalk · DerivaSonora — a running figure carrying a field recorder, rendered as a 1-bit Floyd–Steinberg dither">
+<h1 class="sr-only">SoundWalk · DerivaSonora</h1>
+<p class="tag">a soundwalk instrument · un instrumento de deriva sonora</p>
+</header>
+
+<p><strong>EN</strong> — SoundWalk turns a walk into an instrument. Record geotagged
+sounds, trace your path as a living GPS track, annotate what you hear with
+fast, tap-based bioacoustic metadata, and listen back through nine playback
+modes — from 3D spatial audio to solar-time bridges that connect the dawn of
+one place with the dawn of another.</p>
+
+<p class="es"><strong>ES</strong> — DerivaSonora convierte una caminata en un
+instrumento. Graba sonidos geolocalizados, traza tu recorrido como un tracklog
+GPS vivo, anota lo que escuchas con metadatos bioacústicos rápidos de marcar, y
+vuelve a escuchar a través de nueve modos de reproducción — del audio espacial
+3D a los puentes solares que conectan el amanecer de un lugar con el de otro.</p>
+
+<p>It is two things at once: an instrument for soundwalks and dérives, and a
+tool for young people to become active in the conservation of their own
+territories through bioacoustics — mapping the birds, insects, water and
+voices of the places they live. Developed as doctoral research in artistic
+creation (<em>Biocracia</em>, UTADEO), grounded in the MANAKAI reserve,
+Córdoba, Colombia.</p>
+
+<h2>// get it · consíguela</h2>
+<div class="get">
+  <p>
+    <a class="soon" href="#" title="coming soon">Google Play — SoundWalk (full) ⏳</a>
+    <a class="soon" href="#" title="coming soon">Google Play — SoundWalk Free ⏳</a>
+  </p>
+  <p>
+    <a class="soon" href="#" title="coming soon">Gumroad — direct APK ⏳</a>
+    <a class="soon" href="#" title="coming soon">Ko-fi — support this work ⏳</a>
+  </p>
+  <p class="tag">Store links coming soon — the app is on its way to publication.
+  Free edition maps up to 5 sounds; the full edition is unlimited with ZIP
+  export/import of complete soundwalks.</p>
+</div>
+
+<h2>// what it does · qué hace</h2>
+<ul>
+  <li>Geotagged field recording with tap-only bioacoustic metadata
+      (habitat, sound stratum, distance, activity, species) — almost no typing.</li>
+  <li>GPS-tracked “sound drifts” (derivas) that draw themselves on the map.</li>
+  <li>Nine listening modes: Nearby (spatial radar), Clock, Dawn, Dusk,
+      Strata, Chronological, Jamm, Migratory, Spectrum.</li>
+  <li>Share complete soundwalks as ZIP packages; export to Raven Pro,
+      Audacity labels and GPX (QGIS/ArcGIS).</li>
+  <li>Bilingual (español / English) · fully offline · Android + web.</li>
+</ul>
+
+<h2>// privacy · privacidad</h2>
+<p>No server. No accounts. No analytics. No ads. Everything you record stays on
+your device until <em>you</em> export it.
+<a href="privacy.html">Privacy policy / Política de privacidad</a>.</p>
+
+<h2>// source &amp; license</h2>
+<p>Source code: <a href="https://github.com/alejoduque/BioMapp">github.com/alejoduque/BioMapp</a><br>
+License: CC BY-NC-SA 4.0 · Copyright © 2026 Alejandro Duque Jaramillo ·
+Developed for Reserva MANAKAI.</p>
+
+<footer>
+<p>This page is handmade HTML — about 5&nbsp;KB plus a 17&nbsp;KB 1-bit
+Floyd–Steinberg logo, no JavaScript, no cookies, no tracking, no external
+fonts. It should work on any browser, on any connection, for a very long time.</p>
+<p>contact: hk4adj@gmail.com · <a href="https://etc.altred.xyz/">etc.altred.xyz</a>
+· <a href="publish-guide.html">publishing wizard</a></p>
+</footer>
+
+</body>
+</html>
