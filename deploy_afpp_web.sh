@@ -21,8 +21,9 @@ OUT=dist-afpp
 VITE_AFPP_API="$API" npx vite build --base=/AlpineFeministPunkParade/ --outDir "$OUT" --emptyOutDir
 # The download link (header + how-to): the newest ./build_deriva.sh APK.
 APK=$(ls -t deriva-sonora-*.apk 2>/dev/null | head -1 || true)
-# only the top-level API path, never glyphs/afpp/; earlier bundles stay two weeks (a page still open keeps working)
-FLAGS=(-rltz --delete --exclude /afpp/ --filter='P /assets/**')  # no --chmod: macOS openrsync lacks it
+# only the top-level API path, never glyphs/afpp/; assets/ goes up first and is never deleted
+# here: earlier bundles stay two weeks, so a page still open keeps working
+FLAGS=(-rltz --delete --exclude /afpp/ --exclude /assets/)  # no --chmod: macOS openrsync lacks it
 if [ -n "$APK" ]; then
   cp "$APK" "$OUT/deriva-sonora.apk"
   echo "apk: $APK → deriva-sonora.apk"
@@ -31,7 +32,8 @@ else
   echo "apk: none here (./build_deriva.sh makes one); the server's deriva-sonora.apk stays"
 fi
 [ "${1:-}" = "-n" ] && FLAGS+=(-n -v)
-ssh -p "$PORT" "$HOST" "mkdir -p '$WEBROOT'"
+ssh -p "$PORT" "$HOST" "mkdir -p '$WEBROOT/assets'"
+rsync -rltz $([ "${1:-}" = "-n" ] && echo "-n -v") -e "ssh -p $PORT" "$OUT/assets/" "$HOST:$WEBROOT/assets/"
 rsync "${FLAGS[@]}" -e "ssh -p $PORT" "$OUT/" "$HOST:$WEBROOT/"
 [ "${1:-}" = "-n" ] && exit 0
 # owned by the GitHub deploy user when there is one (docs/DEPLOY.md), so the next push can write

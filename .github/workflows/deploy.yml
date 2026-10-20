@@ -68,8 +68,12 @@ jobs:
       # The API path is nginx's, and the APK goes up by hand: neither is deleted here.
       # Earlier bundles stay two weeks, so a page that is still open (or an older
       # copy of index.html in someone's cache) keeps working through a deploy.
+      # Bundles first, never deleted here (so the new page never names a missing one),
+      # then the rest with --delete; excluded paths are left alone by --delete.
       - name: The site
-        run: rsync -rltz --delete --exclude /afpp/ --exclude /deriva-sonora.apk --filter='P /assets/**' -e "ssh -p $SSH_PORT" dist-afpp/ "$TARGET:$WEBROOT/"
+        run: |
+          rsync -rltz -e "ssh -p $SSH_PORT" dist-afpp/assets/ "$TARGET:$WEBROOT/assets/"
+          rsync -rltz --delete --exclude /afpp/ --exclude /deriva-sonora.apk --exclude /assets/ -e "ssh -p $SSH_PORT" dist-afpp/ "$TARGET:$WEBROOT/"
 
       - name: Prune bundles older than two weeks
         run: ssh -p "$SSH_PORT" "$TARGET" "find '$WEBROOT/assets' -type f -mtime +14 -delete"
