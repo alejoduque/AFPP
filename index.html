@@ -8,6 +8,7 @@
     <meta property="og:image" content="https://altred.xyz/AlpineFeministPunkParade/afpp-card.png" />
     <meta name="theme-color" content="#000000" />
     <link rel="icon" href="%BASE_URL%deriva-icon.png" />
+    <link rel="preload" as="image" href="%BASE_URL%afpp-logo-480.png" />
     <title>Deriva Sonora</title>
     <style>
       /* The splash: plain HTML, so it shows the moment the page arrives, before
@@ -42,7 +43,7 @@
   </head>
   <body style="background:#000">
     <div id="splash" role="img" aria-label="Alpine Feminist Punk Parade · Deriva Sonora">
-      <img src="%BASE_URL%afpp-logo-480.png" alt="" width="480" height="640" />
+      <img src="%BASE_URL%afpp-logo-480.png" alt="" width="480" height="640" onload="window.__splashLogoAt = performance.now()" />
       <p class="sub">DERIVA SONORA<span>_</span></p>
       <p class="stuck" id="splash-stuck" hidden>
         the page did not start · <a href="">↻ reload</a>

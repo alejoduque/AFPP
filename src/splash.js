@@ -1,16 +1,35 @@
 /**
- * The splash (index.html) stays at least SPLASH_MS from the page's start, then
- * steps away; a tap, a click or a key lifts it sooner. Marks the app as started,
+ * The splash (index.html): the logo stays at least SHOW_MS once it is drawn
+ * (timed from when it arrives, not from the page's start, so a slow network
+ * still sees it); if it has not come by MAX_WAIT_MS the splash steps away
+ * anyway. A tap, a click or a key lifts it sooner. Marks the app as started,
  * so index.html's "did not start" note never shows.
  */
-const SPLASH_MS = 1400;
+const SHOW_MS = 1400;
+const MAX_WAIT_MS = 4000;
+
+function logoShown(img) {
+  if (window.__splashLogoAt || !img || (img.complete && img.naturalWidth)) return Promise.resolve();
+  return new Promise((resolve) => {
+    const timer = setTimeout(resolve, Math.max(0, MAX_WAIT_MS - performance.now()));
+    const done = () => {
+      clearTimeout(timer);
+      resolve();
+    };
+    img.addEventListener('load', done, { once: true });
+    img.addEventListener('error', done, { once: true });
+  });
+}
 
 export function dismissSplash() {
   window.__afppStarted = true;
   const el = document.getElementById('splash');
   if (!el) return;
   let timer = null;
+  let gone = false;
   const go = () => {
+    if (gone) return;
+    gone = true;
     clearTimeout(timer);
     el.removeEventListener('pointerdown', go);
     window.removeEventListener('keydown', go);
@@ -19,5 +38,8 @@ export function dismissSplash() {
   };
   el.addEventListener('pointerdown', go);
   window.addEventListener('keydown', go);
-  timer = setTimeout(go, Math.max(0, SPLASH_MS - performance.now()));
+  logoShown(el.querySelector('img')).then(() => {
+    const from = window.__splashLogoAt ?? performance.now();
+    timer = setTimeout(go, Math.max(0, from + SHOW_MS - performance.now()));
+  });
 }
