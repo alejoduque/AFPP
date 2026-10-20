@@ -7,11 +7,58 @@
     <meta property="og:title" content="Deriva Sonora · AFPP" />
     <meta property="og:image" content="https://altred.xyz/AlpineFeministPunkParade/afpp-card.png" />
     <meta name="theme-color" content="#000000" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" href="%BASE_URL%deriva-icon.png" />
     <title>Deriva Sonora</title>
+    <style>
+      /* The splash: plain HTML, so it shows the moment the page arrives, before
+         any script. src/splash.js lifts it once the app has started. */
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        background: #000;
+        color: #9b4dff;
+        font: 12px/1.5 ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        letter-spacing: 0.3em;
+        transition: opacity 0.4s steps(2, end);
+      }
+      #splash img { width: min(78vw, 58vh, 480px); height: auto; image-rendering: pixelated; }
+      #splash .sub { margin: 0; color: #fff; }
+      #splash .sub span { animation: splash-blink 1.2s steps(2, jump-none) infinite; }
+      #splash .stuck { margin: 0; color: #6a3bb0; letter-spacing: 0.1em; }
+      #splash .stuck a { color: #fff; }
+      #splash.is-gone { opacity: 0; pointer-events: none; }
+      @keyframes splash-blink { 50% { opacity: 0; } }
+      @media (prefers-reduced-motion: reduce) {
+        #splash { transition: none; }
+        #splash .sub span { animation: none; }
+      }
+    </style>
   </head>
   <body style="background:#000">
+    <div id="splash" role="img" aria-label="Alpine Feminist Punk Parade · Deriva Sonora">
+      <img src="%BASE_URL%afpp-logo-480.png" alt="" width="480" height="640" />
+      <p class="sub">DERIVA SONORA<span>_</span></p>
+      <p class="stuck" id="splash-stuck" hidden>
+        the page did not start · <a href="">↻ reload</a>
+      </p>
+    </div>
     <div id="root"></div>
+    <script>
+      // If the app has not started after a while (an old copy of this page
+      // asking for files that are gone, no network), say so instead of a still logo.
+      setTimeout(function () {
+        if (!window.__afppStarted) {
+          var s = document.getElementById('splash-stuck');
+          if (s) s.hidden = false;
+        }
+      }, 12000);
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

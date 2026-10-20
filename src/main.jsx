@@ -34,6 +34,7 @@ L.Icon.Default.mergeOptions({
 });
 
 import { loadGlyphs } from './afpp/glyphs.js';
+import { dismissSplash } from './splash.js';
 
 // The map marks (glyph sets, see /kit/) load first; a missing file means squares.
 loadGlyphs().finally(() => {
@@ -42,4 +43,5 @@ loadGlyphs().finally(() => {
       <App />
     </React.StrictMode>
   );
+  dismissSplash();
 });

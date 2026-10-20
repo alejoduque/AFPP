@@ -49,10 +49,10 @@ if [ -f /etc/apt/sources.list.d/nodesource.sources ] && grep -q node_22.x /etc/a
 fi
 if [ "$("$NODE_DIR/bin/node" -v 2>/dev/null)" != "$NODE_VERSION" ]; then
   NAME="node-${NODE_VERSION}-linux-x64-glibc-217"
-  BASE="https://unofficial-builds.nodejs.org/download/release/${NODE_VERSION}"
+  NODE_URL="https://unofficial-builds.nodejs.org/download/release/${NODE_VERSION}"
   TMP=$(mktemp -d)
-  curl -fsSL -o "$TMP/$NAME.tar.xz" "$BASE/$NAME.tar.xz"
-  curl -fsSL -o "$TMP/SHASUMS256.txt" "$BASE/SHASUMS256.txt"
+  curl -fsSL -o "$TMP/$NAME.tar.xz" "$NODE_URL/$NAME.tar.xz"
+  curl -fsSL -o "$TMP/SHASUMS256.txt" "$NODE_URL/SHASUMS256.txt"
   (cd "$TMP" && grep " $NAME.tar.xz\$" SHASUMS256.txt | sha256sum -c -)
   rm -rf "$NODE_DIR" && mkdir -p "$NODE_DIR"
   tar -xJf "$TMP/$NAME.tar.xz" -C "$NODE_DIR" --strip-components=1
@@ -178,6 +178,23 @@ location = ${PREFIX}/_rooms {
 NGINX
   fi
   cat <<NGINX
+# The site's page always revalidates: it names the current bundles, and an old
+# copy would ask for bundles a deploy has since retired. The bundles in assets/
+# are content-hashed, so they can be kept a year. (A location with add_header
+# drops the server's, so nosniff is repeated.)
+location = ${BASE}/ {
+    try_files ${BASE}/index.html =404;
+    add_header Cache-Control "no-cache" always;
+    add_header X-Content-Type-Options nosniff always;
+}
+location = ${BASE}/index.html {
+    add_header Cache-Control "no-cache" always;
+    add_header X-Content-Type-Options nosniff always;
+}
+location ^~ ${BASE}/assets/ {
+    add_header Cache-Control "public, max-age=31536000, immutable" always;
+    add_header X-Content-Type-Options nosniff always;
+}
 # The app download: Android's browser offers to install only with this type.
 location = ${BASE}/deriva-sonora.apk {
     types { }

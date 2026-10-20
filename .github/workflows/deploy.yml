@@ -65,9 +65,14 @@ jobs:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
 
-      # the API path is nginx's, and the APK goes up by hand: neither is deleted here
+      # The API path is nginx's, and the APK goes up by hand: neither is deleted here.
+      # Earlier bundles stay two weeks, so a page that is still open (or an older
+      # copy of index.html in someone's cache) keeps working through a deploy.
       - name: The site
-        run: rsync -rltz --delete --exclude /afpp/ --exclude /deriva-sonora.apk -e "ssh -p $SSH_PORT" dist-afpp/ "$TARGET:$WEBROOT/"
+        run: rsync -rltz --delete --exclude /afpp/ --exclude /deriva-sonora.apk --filter='P /assets/**' -e "ssh -p $SSH_PORT" dist-afpp/ "$TARGET:$WEBROOT/"
+
+      - name: Prune bundles older than two weeks
+        run: ssh -p "$SSH_PORT" "$TARGET" "find '$WEBROOT/assets' -type f -mtime +14 -delete"
 
       - name: The server
         run: rsync -rltz --delete --exclude test/ --exclude data/ -e "ssh -p $SSH_PORT" server/afpp/ "$TARGET:/opt/afpp/"

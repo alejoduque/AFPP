@@ -5,6 +5,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [AFPP] — 2026-10-20 — the splash, and pages that always start
+
+### Added
+- **The logo splash** on every load, web and APK: plain HTML in index.html, so
+  it shows before any script; it lifts after 1.4 s, or at a tap or a key.
+
+### Fixed
+- **The site could stay empty** after a deploy: index.html had no
+  Cache-Control, so a browser kept an old copy asking for bundles the deploy
+  had deleted. The page now always revalidates (nginx, snippets/afpp.conf),
+  the content-hashed bundles are cached a year, and deploys keep earlier
+  bundles two weeks. A page that still cannot start says so on the splash,
+  with a reload link, instead of showing nothing.
+- setup-on-server.sh: the Node download reused BASE, the site's path; on a
+  fresh server the nginx snippet would have been written with the wrong path.
+
+---
+
 ## [AFPP] — 2026-10-20 — one app
 
 ### Changed

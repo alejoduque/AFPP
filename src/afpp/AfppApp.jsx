@@ -46,7 +46,6 @@ const MIX_KEY = 'afpp_rings';
 const SATELLITES = 12; // the latest shared sounds shown around the rings
 const TRACKLOG_KEEP = 12; // shared walks the tracklog keeps to play
 const SETTLE_MS = 2500; // a share arrives as a burst (the derive, then each sound): wait for it to settle
-const SPLASH_MS = 1400;
 const HERE_ZOOM = 17;
 
 function loadMix() {
@@ -78,14 +77,6 @@ function setHash(place) {
 /** About 10 km across, at most street level. */
 const placeZoom = (lat) => Math.min(HERE_ZOOM, zoomForKm(lat, typeof window === 'undefined' ? 800 : window.innerWidth));
 
-function Splash() {
-  return (
-    <div className="perma-splash" aria-label="Deriva Sonora">
-      <img src={`${import.meta.env.BASE_URL}deriva-splash.png`} alt="Deriva Sonora" />
-    </div>
-  );
-}
-
 function Clock({ since }) {
   const [, tick] = useState(0);
   useEffect(() => {
@@ -96,7 +87,6 @@ function Clock({ since }) {
 }
 
 export default function AfppApp({ native = false }) {
-  const [splash, setSplash] = useState(native);
   const [stage, setStage] = useState(() => {
     const f = focusFromHash();
     return f ? { view: 'map', center: [f.lat, f.lng], zoom: placeZoom(f.lat), follow: false, key: 1 } : { view: 'planet', key: 1 };
@@ -145,12 +135,6 @@ export default function AfppApp({ native = false }) {
   const myLiveRef = useRef(null); // the LiveWalk while your derive is ◍ live
   const [myLive, setMyLive] = useState(null); // {status, voice}
   const [liveSheet, setLiveSheet] = useState(false);
-
-  useEffect(() => {
-    if (!splash) return undefined;
-    const id = setTimeout(() => setSplash(false), SPLASH_MS);
-    return () => clearTimeout(id);
-  }, [splash]);
 
   const say = useCallback((msg) => {
     setNotice(msg);
@@ -487,7 +471,6 @@ export default function AfppApp({ native = false }) {
       </div>
     );
   }
-  if (splash) return <Splash />;
 
   const base = import.meta.env.BASE_URL;
   const activeSounds = field.derive ? walkSessionService.getActiveSession()?.recordingIds?.length || 0 : 0;

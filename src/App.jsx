@@ -6,8 +6,9 @@
  *
  * One app (AfppApp) in a browser and on the phone (Capacitor): the planet and
  * the street map, recording and listening, the #AFPP chat. The phone starts
- * its GPS at once and shows the splash; a browser asks for the location only
- * when you want to walk. Old ?recorder links open the same app.
+ * its GPS at once; a browser asks for the location only when you want to
+ * walk. Old ?recorder links open the same app. The logo splash is plain HTML
+ * in index.html (src/splash.js lifts it).
  */
 import React, { Component } from 'react';
 import { subscribe } from './i18n';

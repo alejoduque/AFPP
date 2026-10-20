@@ -21,7 +21,8 @@ OUT=dist-afpp
 VITE_AFPP_API="$API" npx vite build --base=/AlpineFeministPunkParade/ --outDir "$OUT" --emptyOutDir
 # The download link (header + how-to): the newest ./build_deriva.sh APK.
 APK=$(ls -t deriva-sonora-*.apk 2>/dev/null | head -1 || true)
-FLAGS=(-rlz --delete --exclude /afpp/)  # only the top-level API path, never glyphs/afpp/   # no --chmod: macOS openrsync lacks it
+# only the top-level API path, never glyphs/afpp/; earlier bundles stay two weeks (a page still open keeps working)
+FLAGS=(-rltz --delete --exclude /afpp/ --filter='P /assets/**')  # no --chmod: macOS openrsync lacks it
 if [ -n "$APK" ]; then
   cp "$APK" "$OUT/deriva-sonora.apk"
   echo "apk: $APK → deriva-sonora.apk"
@@ -35,4 +36,5 @@ rsync "${FLAGS[@]}" -e "ssh -p $PORT" "$OUT/" "$HOST:$WEBROOT/"
 [ "${1:-}" = "-n" ] && exit 0
 # owned by the GitHub deploy user when there is one (docs/DEPLOY.md), so the next push can write
 ssh -p "$PORT" "$HOST" "o=root; id deploy >/dev/null 2>&1 && o=deploy; chown -R \$o:\$o '$WEBROOT' && find '$WEBROOT' -type d -exec chmod 755 {} + && find '$WEBROOT' -type f -exec chmod 644 {} +"
+ssh -p "$PORT" "$HOST" "find '$WEBROOT/assets' -type f -mtime +14 -delete"
 echo "live: https://altred.xyz/AlpineFeministPunkParade/"
