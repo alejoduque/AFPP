@@ -53,6 +53,9 @@ html, body { background: #000; }
   pointer-events: none;
 }
 
+/* on the planet the status sits at the top, clear of the globe's own lines */
+.perma-status--top { top: 8px; bottom: auto; }
+
 .perma-status > span,
 .perma-status { text-shadow: 0 0 0 #000; }
 .perma-status span { background: var(--ground); padding: 0 4px; }
@@ -148,6 +151,15 @@ html, body { background: #000; }
   text-transform: uppercase;
   letter-spacing: 0.1em;
   padding: 6px;
+}
+
+/* Wide screens: the bar is one slim row, so the stage keeps its height. */
+@media (min-width: 820px) {
+  .perma-bar { padding: 6px 16px calc(6px + env(safe-area-inset-bottom, 0)); }
+  .perma-bar__side { flex: 0 0 auto; flex-direction: row; gap: 6px; padding: 0 12px; font-size: 16px; }
+  .perma-bar__center { flex-direction: row; }
+  .perma-mic { flex: 2; min-height: 40px; font-size: 15px; }
+  .perma-derive { flex: 1; }
 }
 
 /* ───────────────────────────────────────────────────────────── sheets */

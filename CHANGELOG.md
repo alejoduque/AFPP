@@ -5,6 +5,29 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [AFPP] — 2026-10-20 — one app
+
+### Changed
+- **The listener and the recorder are one app**, in the browser and the APK:
+  the planet ⇄ street map stage (zoom in to dive, zoom out to come back,
+  `stage.mjs`), one map for listening and walking (`WalkMap.jsx`, replacing
+  `LocalMap.jsx` and `FieldMap.jsx`), the record/derive/live bar always there,
+  the chat and the rings as panels. `?recorder` links open the same app.
+- The browser asks for the location only when you walk (⌖, ●, ▶), and for
+  the alias the first time you record or derive.
+- A share or a live walk turns the planet into the tracklog only on the
+  planet; on the street map a line offers to go and watch.
+- The globe's idle drift is per second, not per frame, and it holds still
+  over the place you come back from.
+- The APK has the #AFPP chat (Ergo allows the app's origin, `https://localhost`).
+
+### Fixed
+- The recorder's map showed only place names when it had no location: it
+  opened at continental zoom, where the line-art filter keeps only labels.
+  The street map now never goes below zoom 8; the planet takes over.
+
+---
+
 ## [AFPP] — 2026-10-19 — own repository
 
 ### Added

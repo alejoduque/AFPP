@@ -33,6 +33,7 @@ The second command shows Ergo's config file (`--conf …/ircd.yaml`). In it, und
         allowed-origins:
             - "https://reporta.altred.xyz"
             - "https://altred.xyz"
+            - "https://localhost"   # the Android app (Capacitor, androidScheme https)
 ```
 
 ```

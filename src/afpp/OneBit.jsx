@@ -1,5 +1,5 @@
 /**
- * The 1-bit map look, shared by the listener's local map and the recorder.
+ * The 1-bit map look of the street map (WalkMap.jsx).
  *
  * <OneBitFilter/> mounts the SVG filter once. OSM tiles go through it: anything
  * darker than luminance 0.81 (road casings, water, paths, labels; not

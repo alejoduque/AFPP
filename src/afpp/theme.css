@@ -152,6 +152,31 @@
   z-index: 2;
 }
 
+/* The street map (WalkMap): others walking right now, and a quiet error line. */
+.afpp-walker { background: var(--lit); outline: 2px solid var(--ground); animation: afpp-blink 0.8s steps(2, jump-none) infinite; }
+.afpp-local__error { position: absolute; left: 12px; top: 8px; z-index: 500; margin: 0; background: var(--ground); padding: 0 4px; }
+
+/* A share or a live walk while you are on the street map: go and watch it on the planet. */
+.afpp-watch {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  transform: translateX(-50%);
+  z-index: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100% - 24px);
+  margin: 0;
+  padding: 4px 6px 4px 10px;
+  background: var(--ground);
+  border: 1px solid var(--lit);
+  color: var(--lit);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* The tracklog (GlobeView, tracklog.mjs): who walked, when, and where the playhead is. */
 .afpp-globe__play { position: absolute; right: 16px; bottom: 8px; }
 .afpp-tip--sound { border-color: var(--lit); animation: afpp-blink 0.8s steps(2, jump-none) 2; }
@@ -179,10 +204,11 @@
 
 @media (prefers-reduced-motion: reduce) {
   .afpp-tip--sound,
-  .afpp-track__live { animation: none; }
+  .afpp-track__live,
+  .afpp-walker { animation: none; }
 }
 
-/* --------------------------------------------------------------- local map */
+/* -------------------------------------------------------------- street map */
 
 .afpp-local,
 .afpp-local__map {
@@ -222,20 +248,6 @@
 .afpp .leaflet-bar { border: 0; box-shadow: none; }
 .afpp .leaflet-bar a:hover { background: var(--ink); color: var(--ground); }
 
-.afpp-local__bar {
-  position: absolute;
-  top: 8px;
-  left: 16px;
-  right: 16px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  z-index: 500;
-  pointer-events: none;
-}
-
-.afpp-local__bar > * { pointer-events: auto; }
-.afpp-local__bar > span { background: var(--ground); padding: 0 4px; }
 
 /* A sound: a small square, ink; white when selected, heard or in the rings. */
 .afpp-rec {

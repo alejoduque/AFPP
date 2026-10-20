@@ -1,24 +1,20 @@
 /**
- * @fileoverview Deriva Sonora (permasoftware branch).
+ * @fileoverview AFPP · Deriva Sonora.
  *
  * Copyright (c) 2026 Alejandro Duque Jaramillo. Licensed CC BY-NC-SA 4.0
  * (see the header of the files inherited from SoundWalk for the full terms).
  *
- *   on the phone (Capacitor)   PermaApp: record derives, see yours, open the globe
- *   in a browser               AfppApp: the globe, the local map, the rings
- *   in a browser, ?recorder    PermaApp, for development (MediaRecorder + web GPS)
- *
- * No landing page, no SoundWalk screens: those live on main / AFPP.
+ * One app (AfppApp) in a browser and on the phone (Capacitor): the planet and
+ * the street map, recording and listening, the #AFPP chat. The phone starts
+ * its GPS at once and shows the splash; a browser asks for the location only
+ * when you want to walk. Old ?recorder links open the same app.
  */
-import React, { Component, Suspense, lazy } from 'react';
+import React, { Component } from 'react';
 import { subscribe } from './i18n';
 import AfppApp from './afpp/AfppApp.jsx';
 
-const PermaApp = lazy(() => import('./perma/PermaApp.jsx'));
-
 const IS_NATIVE = typeof window !== 'undefined' && !!window.Capacitor &&
   (window.Capacitor.isNative || (window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()));
-const WEB_RECORDER = typeof location !== 'undefined' && new URLSearchParams(location.search).has('recorder');
 
 class App extends Component {
   state = { lang: null };
@@ -33,11 +29,7 @@ class App extends Component {
   }
 
   render() {
-    return (
-      <Suspense fallback={<div style={{ position: 'fixed', inset: 0, background: '#000' }} />}>
-        {IS_NATIVE || WEB_RECORDER ? <PermaApp /> : <AfppApp web />}
-      </Suspense>
-    );
+    return <AfppApp native={IS_NATIVE} />;
   }
 }
 

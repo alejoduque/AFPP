@@ -1,5 +1,5 @@
 /**
- * Read side of the AFPP API, for the globe, the local map and the rings.
+ * Read side of the AFPP API, for the planet, the street map and the rings.
  * The write side (publishing a derive from the phone) is in
  * src/services/afppShareService.js.
  */

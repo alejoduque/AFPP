@@ -4,12 +4,18 @@ The Alpine Feminist Punk Parade's walking and listening instrument, in its own
 repository (it began as the `permasoftware` branch of
 [BioMapp / SoundWalk](https://github.com/alejoduque/BioMapp); that history is kept here).
 
-- **Deriva Sonora**, the field app (`src/perma/`, Android `xyz.altred.permasoftware`
-  and `?recorder` in any browser): record sounds, walk a derive, share it, or
-  walk it **◍ live**.
-- **The global map**, the web listener (`src/afpp/`), live at
-  https://altred.xyz/AlpineFeministPunkParade/: the globe, the local map, the
-  rings, the **#AFPP chat** and its assembly, and the **tracklog**.
+- **One app** (`src/afpp/AfppApp.jsx`), the same in a browser
+  (https://altred.xyz/AlpineFeministPunkParade/) and on Android
+  (`xyz.altred.permasoftware`):
+  - **the stage:** zoomed out, the 1-bit **planet** (`GlobeView.jsx`) with its
+    **tracklog**; zoom in, click a dot or ⌖ and it becomes the line-art
+    **street map** (`WalkMap.jsx`), where you listen and where you walk. Zoom
+    the map out and the planet comes back (`stage.mjs` keeps the scale).
+  - **the bar:** ⌖ here / ◯ planet · ● record · ▶ derive (◍ live) · ≡ your
+    derives (`src/perma/`: GPS, recorder, sheets, live walks).
+  - **the #AFPP chat** and its assembly, and the **rings**.
+  A browser asks for the location only when you walk (⌖, ●, ▶); the APK finds
+  you at launch.
 - **The server** (`server/afpp/`): shared derives, the bitácora, the #AFPP ↔
   Telegram bridge, ICE for WebRTC. Plain Node, no dependencies.
 
@@ -55,7 +61,7 @@ npm install
 node server/afpp/tools/seed.mjs
 # the room relay (from a KLAP checkout): go run . in realtime/, or docker build + run on :8001
 VITE_AFPP_API=http://127.0.0.1:8790 VITE_AFPP_ROOMS=/afpp/_rooms npm run dev
-# http://localhost:5173 (globe + chat), http://localhost:5173/?recorder (field app)
+# http://localhost:5173 (the app; recording needs location: Chrome DevTools → Sensors fakes one)
 # VITE_AFPP_IRC=ws://127.0.0.1:8097 points the chat at a local Ergo with a websocket listener
 ```
 

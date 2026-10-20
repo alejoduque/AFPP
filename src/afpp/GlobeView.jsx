@@ -8,7 +8,7 @@
  * and light into the green one; the quantiser reads each channel as coverage.
  *
  * Drag spins it; it drifts slowly when left alone. Clicking a dot turns the
- * globe to it and hands it to the local map.
+ * globe to it and hands it to the street map.
  *
  * The tracklog: when people share their derives (or walk one live), the planet
  * turns into a tracklog. It flies down to the walk; as it leans in, the
@@ -18,6 +18,11 @@
  * last steps lit, the walker a blinking square, each sound a ring that lights
  * up when the walker reaches it. A live walk is followed as it happens. When
  * the queue is done, the globe flies back out.
+ *
+ * The planet and the street map are one stage (stage.mjs): zooming in past
+ * GLOBE_FREE_MAX dives down to the street map's scale (the same dissolve as
+ * the tracklog) and hands over with onZoomIn; arriving from the map (`from`),
+ * the globe starts at the map's scale and flies back out. Pinch works too.
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { geoOrthographic, geoPath, geoGraticule, geoGraticule10, geoDistance, geoInterpolate } from 'd3-geo';
@@ -28,6 +33,7 @@ import { GROUND_RGB, INK_RGB, LIT_RGB } from './palette.js';
 import { t } from '../i18n';
 import { soundsLabel } from './format.js';
 import { fitView, timeline, at, niceStep, hhmm, MAX_ZOOM } from './tracklog.mjs';
+import { GLOBE_FREE_MAX, MAP_ENTRY_ZOOM, globeZoom } from './stage.mjs';
 
 const SCALE = 2; // CSS px per globe pixel
 const LAND = feature(land110, land110.objects.land);
@@ -35,7 +41,7 @@ const GRATICULE = geoGraticule10();
 const HOUR = 3_600_000;
 const FRESH_MS = HOUR; // a derive this recent shines white
 const FLASH_MS = 30_000; // so does one that just changed (SSE)
-const DRIFT = 0.06; // degrees per frame when idle: one turn in about 100 s
+const DRIFT = 3.6; // degrees per second when idle: one turn in about 100 s
 const D2R = Math.PI / 180;
 // the tracklog
 const FLY_MS = 2600; // down to a walk, or from one walk to the next
@@ -44,6 +50,7 @@ const HOLD_MS = 2500; // a finished walk stays a moment before the next
 const LIT_TRAIL_MS = 1500; // the last 1.5 s of playback are lit
 const RING_MS = 1500; // a reached sound's ring swells this long
 const DISSOLVE = Math.log(40); // the planet is gone by zoom 40
+const DIVE_MS = 1600; // from the free planet down to the street map, or back
 
 /** Blink period by age: recent derives blink fast, old ones breathe. */
 function period(ageMs) {
@@ -58,34 +65,40 @@ const line = (coords) => ({ type: 'LineString', coordinates: coords });
 
 /**
  * A flight between two views, hopping out and back in when they are far apart
- * at street scale (a straight pan at zoom 20 000 would be a blur).
+ * at street scale (a straight pan at zoom 20 000 would be a blur). In place
+ * (diving into the street map, flying back out of it) it is one long zoom.
+ * The clock starts at the first frame drawn (t0 null), so a slow mount does
+ * not eat the animation.
  */
 function flight(from, to, ms, done) {
   const dist = geoDistance(from.center, to.center);
-  const mid = Math.max(1, Math.min(from.zoom, to.zoom, dist > 0 ? 1 / dist : Infinity));
   const interp = geoInterpolate(from.center, to.center);
   const l0 = Math.log(from.zoom);
-  const lm = Math.log(mid);
   const l1 = Math.log(to.zoom);
+  const inPlace = dist < 1e-4;
+  const lm = Math.log(Math.max(1, Math.min(from.zoom, to.zoom, dist > 0 ? 1 / dist : Infinity)));
   return {
-    t0: performance.now(),
+    t0: null,
     ms,
     done,
     at(e) {
+      if (inPlace) return { center: to.center, zoom: Math.exp(l0 + (l1 - l0) * ease(e)) };
       const z = e < 0.5 ? l0 + (lm - l0) * ease(e * 2) : lm + (l1 - lm) * ease((e - 0.5) * 2);
       return { center: interp(ease(e)), zoom: Math.exp(z) };
     },
   };
 }
 
-export default function GlobeView({ activity, flashes, focus, onSelect, tracks = [], tracklog = false, onTracklog, onSound, listen = false, onListen }) {
+export default function GlobeView({ activity, flashes, focus, from, onSelect, onZoomIn, tracks = [], tracklog = false, onTracklog, onSound, listen = false, onListen }) {
   const canvasRef = useRef(null);
   const wrapRef = useRef(null);
   const markRef = useRef(null);
   const trackRef = useRef(null); // the overlay strip: the walk is framed above it
   const state = useRef({
-    rotate: focus ? [-focus.lng, -focus.lat] : [75, -10],
+    rotate: from ? [-from.lng, -from.lat] : focus ? [-focus.lng, -focus.lat] : [75, -10],
     zoom: 1,
+    from, // seen once, at mount: the map's place and scale, to fly out from
+    pointers: new Map(), // fingers on the canvas (pinch)
     dragging: null,
     idleSince: 0,
     flight: null,
@@ -105,6 +118,7 @@ export default function GlobeView({ activity, flashes, focus, onSelect, tracks =
   s0.onTracklog = onTracklog;
   s0.onSound = onSound;
   s0.onSelect = onSelect;
+  s0.onZoomIn = onZoomIn;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -227,7 +241,7 @@ export default function GlobeView({ activity, flashes, focus, onSelect, tracks =
           // by the time passed (half the way in ~0.4 s), not by frames
           const target = fitView(tk.trace, trackFrame());
           if (target) {
-            const k = 1 - Math.exp(-Math.min(500, now - (s.lastFrame || now)) / 600);
+            const k = 1 - Math.exp(-s.dt / 600);
             const v = view();
             setView({
               center: [v.center[0] + (target.center[0] - v.center[0]) * k, v.center[1] + (target.center[1] - v.center[1]) * k],
@@ -342,11 +356,13 @@ export default function GlobeView({ activity, flashes, focus, onSelect, tracks =
       const s = state.current;
       const { w, h } = size;
 
-      stepTracklog(now);
+      s.dt = Math.min(500, now - (s.lastFrame || now)); // ms since the last frame
       s.lastFrame = now;
+      stepTracklog(now);
 
       // A flight: to a selected dot, to a walk, between walks, back out.
       if (s.flight) {
+        if (s.flight.t0 == null) s.flight.t0 = now;
         const k = Math.min(1, (now - s.flight.t0) / s.flight.ms);
         setView(s.flight.at(k));
         if (k === 1) {
@@ -355,7 +371,7 @@ export default function GlobeView({ activity, flashes, focus, onSelect, tracks =
           done();
         }
       } else if (!s.track && !s.dragging && !s.inside && !reduced && now - s.idleSince > 2500) {
-        s.rotate = [s.rotate[0] + DRIFT, s.rotate[1]];
+        s.rotate = [s.rotate[0] + (DRIFT * Math.min(100, s.dt)) / 1000, s.rotate[1]];
       }
 
       // How far the planet has turned into the tracklog: 0 = globe, 1 = paper.
@@ -467,6 +483,19 @@ export default function GlobeView({ activity, flashes, focus, onSelect, tracks =
       frame = requestAnimationFrame(draw);
     }
     frame = requestAnimationFrame(draw);
+    // From the street map: start at its scale (the planet dissolved), fly back out.
+    if (state.current.from) {
+      const f = state.current.from;
+      const startZoom = globeZoom(f.zoom, f.lat, { w: canvas.clientWidth, h: canvas.clientHeight });
+      state.current.from = null;
+      if (!reduced && startZoom > 1) {
+        state.current.zoom = startZoom;
+        // hold still a while over the place you came from before drifting on
+        state.current.flight = flight({ center: [f.lng, f.lat], zoom: startZoom }, { center: [f.lng, f.lat], zoom: 1 }, DIVE_MS, () => {
+          state.current.idleSince = performance.now() + 8000;
+        });
+      }
+    }
 
     // ------------------------------------------------------------ input
     const toCanvas = (e) => {
@@ -487,13 +516,52 @@ export default function GlobeView({ activity, flashes, focus, onSelect, tracks =
       return best;
     };
 
+    /** Zoom by a factor; past the free limit (outside the tracklog) the planet dives into the map. */
+    function zoomBy(factor) {
+      const s = state.current;
+      if (s.flight) return;
+      const next = s.zoom * factor;
+      if (!s.track && next > GLOBE_FREE_MAX && s.onZoomIn) return dive();
+      const max = s.track ? MAX_ZOOM : GLOBE_FREE_MAX;
+      s.zoom = Math.max(0.7, Math.min(max, next));
+      s.idleSince = performance.now();
+    }
+    function dive() {
+      const s = state.current;
+      const [lng, lat] = [-s.rotate[0], -s.rotate[1]];
+      const done = () => s.onZoomIn?.({ lat, lng, zoom: MAP_ENTRY_ZOOM });
+      setHover(null);
+      if (reduced) return done();
+      const target = globeZoom(MAP_ENTRY_ZOOM, lat, { w: canvas.clientWidth, h: canvas.clientHeight });
+      s.flight = flight(view(), { center: [lng, lat], zoom: target }, DIVE_MS, done);
+    }
+    function pinch() {
+      const pts = [...state.current.pointers.values()];
+      return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+    }
+
     function down(e) {
-      if (state.current.flight) return;
+      const s = state.current;
+      if (s.flight) return;
       canvas.setPointerCapture(e.pointerId);
-      state.current.dragging = { x: e.clientX, y: e.clientY, r: state.current.rotate, moved: 0 };
+      s.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (s.pointers.size === 2) {
+        // two fingers: a pinch, not a drag
+        s.dragging = null;
+        s.pinch = pinch();
+        return;
+      }
+      s.dragging = { x: e.clientX, y: e.clientY, r: s.rotate, moved: 0 };
     }
     function move(e) {
       const s = state.current;
+      if (s.pointers.has(e.pointerId)) s.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (s.pointers.size === 2 && s.pinch) {
+        const d = pinch();
+        if (d > 0) zoomBy(d / s.pinch);
+        s.pinch = d;
+        return;
+      }
       // Over the sphere, the globe holds still, so a dot can be read and caught.
       const [mx, my] = toCanvas(e);
       s.inside = Math.hypot(mx - size.w / 2, my - size.h / 2) < radius();
@@ -513,6 +581,13 @@ export default function GlobeView({ activity, flashes, focus, onSelect, tracks =
     }
     function up(e) {
       const s = state.current;
+      s.pointers.delete(e.pointerId);
+      if (s.pinch) {
+        if (s.pointers.size < 2) s.pinch = null;
+        s.dragging = null;
+        s.idleSince = performance.now() + 6000;
+        return;
+      }
       const drag = s.dragging;
       s.dragging = null;
       // A finger leaves no hover behind: hold still a while longer after a touch.
@@ -521,7 +596,7 @@ export default function GlobeView({ activity, flashes, focus, onSelect, tracks =
         const p = hit(e);
         if (p) fly(p.d);
         else if (s.track && !s.track.trace.live) {
-          // the walk on screen: open it on the local map
+          // the walk on screen: open it on the street map
           const tr = s.track.trace;
           const target = s.track.target;
           s.onSelect?.({ id: tr.id, alias: tr.alias, title: tr.title, lat: target.center[1], lng: target.center[0] });
@@ -530,10 +605,7 @@ export default function GlobeView({ activity, flashes, focus, onSelect, tracks =
     }
     function wheel(e) {
       e.preventDefault();
-      const s = state.current;
-      const max = s.track ? MAX_ZOOM : 6;
-      s.zoom = Math.max(0.7, Math.min(max, s.zoom * Math.exp(-e.deltaY * 0.0015)));
-      s.idleSince = performance.now();
+      zoomBy(Math.exp(-e.deltaY * 0.0015));
     }
     function fly(d) {
       const s = state.current;
