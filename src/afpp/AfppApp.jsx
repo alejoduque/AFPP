@@ -498,6 +498,7 @@ export default function AfppApp({ native = false }) {
           <nav className="afpp-links">
             <a href={`${base}howto/${getLanguage() === 'en' ? '' : `${getLanguage()}/`}`}>{t('afpp.nav.howto')}</a>
             <a className="afpp-wide" href={`${base}bitacora/`}>{t('afpp.nav.bitacora')}</a>
+            <a className="afpp-wide" href="https://alejoduque.github.io/permasoftware-assembly/">{t('afpp.nav.permasoftware')}</a>
             <a href={`${base}deriva-sonora.apk`} download>
               <span className="afpp-wide">{t('afpp.nav.apk')}</span>
               <span className="afpp-narrow">APK</span> ↓

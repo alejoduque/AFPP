@@ -10,7 +10,8 @@ Writes the how-to pages, one per language, from one template:
     python3 tools/make_howto.py
 
 Text lives in TEXT below; markup in PAGE. {k:…} marks a key/button, {l:…} a
-lit (white) word. Links are relative, so the pages work under any base path.
+lit (white) word, {p:…} a link to the permasoftware assembly. Links to the
+site are relative, so the pages work under any base path.
 """
 import os
 import re
@@ -70,7 +71,7 @@ TEXT = {
   others=['On the app’s map, derives shared near you are {l:dashed} and their sounds are hollow squares: tap to listen.',
           '{k:◯ globe} opens the same globe and rings as the web; {k:← Recorder} goes back.'],
   note='What you do not share never leaves your phone. No accounts, ads or analytics. A shared derive can always be removed.',
-  foot='Alpine Feminist Punk Parade · Deriva Sonora · permasoftware, 1-bit · typeface Lugar Común (SIL OFL) · map © OpenStreetMap',
+  foot='Alpine Feminist Punk Parade · Deriva Sonora · {p:permasoftware}, 1-bit · typeface Lugar Común (SIL OFL) · map © OpenStreetMap',
  ),
  'de': dict(
   title='Deriva Sonora: Anleitung',
@@ -121,7 +122,7 @@ TEXT = {
   others=['Auf der Karte der App sind Dérives, die in deiner Nähe geteilt wurden, {l:gestrichelt}, ihre Klänge hohle Quadrate: antippen zum Hören.',
           '{k:◯ Globus} öffnet denselben Globus und dieselben Ringe wie im Web; {k:← Rekorder} geht zurück.'],
   note='Was du nicht teilst, verlässt dein Telefon nie. Keine Konten, keine Werbung, keine Analyse. Eine geteilte Dérive lässt sich jederzeit entfernen.',
-  foot='Alpine Feminist Punk Parade · Deriva Sonora · Permasoftware, 1-Bit · Schrift Lugar Común (SIL OFL) · Karte © OpenStreetMap',
+  foot='Alpine Feminist Punk Parade · Deriva Sonora · {p:Permasoftware}, 1-Bit · Schrift Lugar Común (SIL OFL) · Karte © OpenStreetMap',
  ),
  'fr': dict(
   title='Deriva Sonora : mode d’emploi',
@@ -172,7 +173,7 @@ TEXT = {
   others=['Sur la carte de l’appli, les dérives partagées près de toi sont en {l:pointillés} et leurs sons des carrés vides : touche pour écouter.',
           '{k:◯ globe} ouvre le même globe et les mêmes anneaux que le web ; {k:← Enregistreur} revient.'],
   note='Ce que tu ne partages pas ne quitte jamais ton téléphone. Pas de comptes, de publicité ni d’analyses. Une dérive partagée peut toujours être retirée.',
-  foot='Alpine Feminist Punk Parade · Deriva Sonora · permasoftware, 1 bit · police Lugar Común (SIL OFL) · carte © OpenStreetMap',
+  foot='Alpine Feminist Punk Parade · Deriva Sonora · {p:permasoftware}, 1 bit · police Lugar Común (SIL OFL) · carte © OpenStreetMap',
  ),
  'es': dict(
   title='Deriva Sonora: cómo usar',
@@ -223,7 +224,7 @@ TEXT = {
   others=['En el mapa de la app, las derivas compartidas cerca de ti aparecen {l:punteadas} y sus sonidos como cuadrados huecos: tócalos para escuchar.',
           '{k:◯ globo} abre el mismo globo y anillos de la web; {k:← Grabadora} vuelve.'],
   note='Lo que no compartes no sale de tu teléfono. Sin cuentas, publicidad ni analítica. Una deriva compartida se puede quitar siempre.',
-  foot='Alpine Feminist Punk Parade · Deriva Sonora · permasoftware, 1 bit · tipografía Lugar Común (SIL OFL) · mapa © OpenStreetMap',
+  foot='Alpine Feminist Punk Parade · Deriva Sonora · {p:permasoftware}, 1 bit · tipografía Lugar Común (SIL OFL) · mapa © OpenStreetMap',
  ),
 }
 
@@ -334,6 +335,7 @@ def inline(s, up):
     s = re.sub(r'\{a:(deriva-sonora\.apk)\}', rf'<a href="{up}deriva-sonora.apk" download>\1</a>', s)
     s = re.sub(r'\{r:([^}]*)\}', rf'<a href="{up}?recorder">\1</a>', s)
     s = re.sub(r'\{a:([^}]*)\}', rf'<a href="{up}bitacora/">\1</a>', s)
+    s = re.sub(r'\{p:([^}]*)\}', r'<a href="https://alejoduque.github.io/permasoftware-assembly/">\1</a>', s)
     return s
 
 

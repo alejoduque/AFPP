@@ -424,6 +424,7 @@ export default {
   'afpp.globe.label': 'Globo de derivas compartidas. Arrastra para girarlo; toca un punto que parpadea para ir allí.',
   'afpp.globe.count': '{derives} derivas · {sounds} sonidos',
   'afpp.globe.empty': 'Aún no hay derivas compartidas',
+  'afpp.nav.permasoftware': 'permasoftware ↗',
   'afpp.track.play': 'bitácora de rutas',
   'perma.gps.waiting': 'Buscándote (GPS)… empieza apenas haya señal.',
   'perma.nav.planet': 'planeta',

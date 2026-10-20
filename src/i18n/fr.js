@@ -17,6 +17,7 @@ export default {
   'afpp.chat.send': 'Envoyer',
   'afpp.globe.count': '{derives} dérives · {sounds} sons',
   'afpp.globe.empty': 'Aucune dérive partagée pour l’instant',
+  'afpp.nav.permasoftware': 'permasoftware ↗',
   'afpp.track.play': 'tracklog',
   'perma.gps.waiting': 'On te cherche (GPS)… ça commence dès qu’il y a un signal.',
   'perma.nav.planet': 'planète',

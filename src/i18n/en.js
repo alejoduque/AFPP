@@ -423,6 +423,7 @@ export default {
   'afpp.globe.label': 'Globe of shared derives. Drag to turn it; click a blinking dot to go there.',
   'afpp.globe.count': '{derives} derives · {sounds} sounds',
   'afpp.globe.empty': 'No shared derives yet',
+  'afpp.nav.permasoftware': 'permasoftware ↗',
   'afpp.track.play': 'tracklog',
   'perma.gps.waiting': 'Finding you (GPS)… it starts as soon as there is a fix.',
   'perma.nav.planet': 'planet',
