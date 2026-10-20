@@ -7,7 +7,7 @@
 <title>Deriva Sonora : mode d’emploi</title>
 <meta property="og:title" content="Deriva Sonora : mode d’emploi">
 <meta property="og:image" content="https://altred.xyz/AlpineFeministPunkParade/afpp-card.png">
-<link rel="icon" href="../../favicon.ico">
+<link rel="icon" href="../../deriva-icon.png">
 <script src="../../ticker/ticker.js" defer></script>
 <link rel="alternate" hreflang="en" href="https://altred.xyz/AlpineFeministPunkParade/howto/">
 <link rel="alternate" hreflang="de" href="https://altred.xyz/AlpineFeministPunkParade/howto/de/">
@@ -34,7 +34,7 @@
   h2 { font-size: 1.4rem; margin: 2.2em 0 0.6em; padding-top: 0.6em; border-top: 1px dashed var(--dim); }
   h3 { color: var(--lit); font-size: 1rem; margin: 1.6em 0 0.4em; }
   h3::before { content: '// '; color: var(--dim); }
-  p, li { max-width: 40rem; }
+  p, li { max-width: 40rem; overflow-wrap: anywhere; }  /* long addresses wrap on a phone */
   ol, ul { padding-left: 1.4em; }
   li { margin: 0.35em 0; }
   li::marker { color: var(--dim); }
@@ -53,7 +53,7 @@
 <header class="top">
   <b>DERIVA SONORA · AFPP</b>
   <nav>
-    <a href="../../">globe</a>
+    <a href="../../">ouvrir</a>
     <a href="../../deriva-sonora.apk" download>appli Android ↓</a>
     <a href="../../bitacora/">bitácora</a>
     <span class="langs"><a href="../" hreflang="en" lang="en" title="English">EN</a> <a href="../de/" hreflang="de" lang="de" title="Deutsch">DE</a> <a href="../fr/" hreflang="fr" lang="fr" aria-current="page" title="Français">FR</a> <a href="../es/" hreflang="es" lang="es" title="Español">ES</a></span>
@@ -61,73 +61,89 @@
 </header>
 
 <canvas class="afpp-ticker" data-scale="2" aria-hidden="true"></canvas>
-<figure class="art"><img src="../../afpp-logo.png" width="900" height="1200" alt="Alpine Feminist Punk Parade : titre écrit à la main au-dessus d’un dessin de village alpin, d’un cortège sur la route de montagne et d’une longue table garnie."></figure>
+<figure class="art"><img src="../../afpp-logo.png" width="900" height="1200" alt="Alpine Feminist Punk Parade : titre écrit à la main sur un dessin de village alpin, une parade sur la route de montagne et une longue table de repas."></figure>
 
 <h1>Mode d’emploi<br>Deriva Sonora</h1>
-<p>Partout, des marcheuses et marcheurs enregistrent les sons de leurs <span class="lit">dérives</span> (marches sans but) et, s’ils le souhaitent, les partagent. Ici on les écoute : un globe avec un point là où quelqu’un a partagé une dérive, la carte de chaque lieu, et les <span class="lit">anneaux</span> pour mélanger des sons lointains. Un projet de l’<span class="lit">Alpine Feminist Punk Parade</span>. Trois tons seulement : noir, violet, et blanc pour ce qui est actif ou qui sonne.</p>
+<p>Partout, des marcheuses et marcheurs enregistrent les sons de leurs <span class="lit">dérives</span> (marches sans but) et, s’ils le souhaitent, les partagent, même en direct pendant qu’ils marchent. Ici on les écoute et on en parle : une <span class="lit">planète</span> avec un point là où quelqu’un a partagé une dérive, la <span class="lit">carte des rues</span> de chaque lieu, les <span class="lit">anneaux</span> pour mélanger des sons lointains, et <span class="lit">#AFPP</span>, le chat. C’est une seule appli, la même dans un navigateur et sur un téléphone Android. Un projet de l’<span class="lit">Alpine Feminist Punk Parade</span>. Trois tons seulement : noir, violet, et blanc pour ce qui est actif ou sonne.</p>
 <div class="get">
-  <a class="main" href="../../">Ouvrir le globe</a>
+  <a class="main" href="../../">Ouvrir Deriva Sonora</a>
   <a href="../../deriva-sonora.apk" download>Télécharger l’appli Android (gratuite)</a>
 </div>
 
-<h2>Écouter, sur le web</h2>
-<h3>Le globe</h3>
+<h2>La planète et la carte</h2>
+<h3>La planète</h3>
 <ul>
-  <li>Chaque <span class="lit">point qui clignote</span> est une dérive partagée : plus elle est récente, plus il clignote vite ; <span class="lit">blanc</span> si elle date de la dernière heure ou vient d’arriver.</li>
-  <li><span class="k">glisse</span> pour le faire tourner ; la molette zoome. Tant que le pointeur est sur le globe, il s’arrête, pour que tu puisses attraper un point.</li>
-  <li>Survole un point pour voir qui et combien de sons ; <span class="k">clic</span> pour y aller.</li>
+  <li>Chaque <span class="lit">point qui clignote</span> est une dérive partagée : plus elle est récente, plus il clignote vite ; <span class="lit">blanc</span> si elle date de la dernière heure ou vient d’être partagée.</li>
+  <li><span class="k">Glisser</span> la fait tourner. La molette ou deux doigts zooment ; tant que le pointeur est sur la planète elle s’arrête, pour attraper un point.</li>
+  <li>Survole un point pour voir qui et combien de sons ; <span class="k">clic</span> pour y voler.</li>
+  <li>Continue à zoomer et la planète <span class="lit">plonge dans la carte des rues</span> à l’endroit que tu montres. Dézoome loin la carte et la planète revient.</li>
 </ul>
-<h3>La carte du lieu</h3>
+<h3>Le tracklog</h3>
 <ul>
-  <li>Le globe tourne jusqu’au point et se pose sur une carte d’environ <span class="lit">10 km</span>, dessinée en traits violets.</li>
-  <li>Les <span class="lit">tracés</span> sont les marches, les <span class="lit">carrés</span> les sons. Touche un tracé pour voir ses sons, un carré pour l’écouter.</li>
-  <li><span class="k">▶</span> écoute ; <span class="k">→ anneaux</span> l’envoie au mix ; <span class="k">◯ Globe</span> revient.</li>
+  <li>Quand quelqu’un partage une dérive, ou marche en <span class="lit">direct</span>, la planète devient un <span class="lit">tracklog</span> : elle descend vers la marche et la rejoue dans son temps, le chemin parcouru en violet, les derniers pas en blanc, chaque son un anneau qui s’allume quand la marcheuse l’atteint.</li>
+  <li><span class="k">♪ écouter</span> joue chaque son quand il est atteint. <span class="k">◯ planète</span> (ou <span class="k">Échap</span>) revient ; <span class="k">▶ tracklog</span> rejoue les dernières marches.</li>
+  <li>Une marche en direct est suivie pendant qu’elle a lieu. Si tu es sur la carte des rues, une ligne propose de <span class="k">voir</span> au lieu de t’emmener.</li>
+</ul>
+<h3>La carte des rues</h3>
+<ul>
+  <li>Le lieu en lignes violettes. Les <span class="lit">tracés</span> sont des marches, les <span class="lit">carrés</span> leurs sons. Touche un tracé pour lister ses sons, un carré pour l’écouter.</li>
+  <li><span class="k">▶</span> écoute ; <span class="k">→ anneaux</span> l’envoie au mélange. Tes propres dérives et sons y sont aussi, et qui marche en direct maintenant est une ligne <span class="lit">blanche pointillée</span> avec une marcheuse qui clignote.</li>
+  <li><span class="k">◯ planète</span> dans la barre remonte. <span class="k">⌖</span> te suit de nouveau si tu as déplacé la carte.</li>
   <li>Chaque lieu a sa propre adresse (p. ex. <span class="lit">…/AlpineFeministPunkParade/#46.5000,8.5000</span>) : copie-la pour partager cette carte.</li>
 </ul>
 <h3>Les anneaux</h3>
 <ul>
-  <li>Ouvre <span class="k">◎ anneaux</span> en bas. Les sons envoyés attendent au bord : <span class="lit">glisse-les dans</span> le cercle pour les entendre.</li>
+  <li>Ouvre <span class="k">◎ anneaux</span>. Les sons envoyés attendent au bord : <span class="lit">glisse-les dans</span> le cercle pour les entendre.</li>
   <li>Plus près du centre, plus fort ; à gauche ou à droite, le son se place de ce côté. Lâche-le dehors et il attend à nouveau.</li>
   <li>Des sons de lieux très éloignés peuvent jouer ensemble : c’est l’idée. Chacun tourne en boucle.</li>
-  <li>Clavier : <span class="k">Tab</span> jusqu’à un son, flèches pour le déplacer, <span class="k">Entrée</span> pour entrer ou sortir, <span class="k">Suppr</span> pour le retirer. Ton mix reste dans ton navigateur.</li>
+  <li>Clavier : <span class="k">Tab</span> jusqu’à un son, flèches pour le déplacer, <span class="k">Entrée</span> pour entrer ou sortir, <span class="k">Suppr</span> pour le retirer. Ton mix reste sur cet appareil.</li>
 </ul>
-<h3>Le chat et la bitácora</h3>
-<p>À côté du globe (en dessous sur un téléphone) se trouve <span class="lit">#AFPP</span>, le chat de l’Alpine Feminist Punk Parade. Choisis un pseudo et <span class="k">Entrer</span>. <span class="k">/nick</span> change ton pseudo, <span class="k">/me</span> décrit une action ; touche son titre pour le replier. Tout ce qui se dit dans #AFPP, et chaque dérive partagée, est gardé dans la <a href="../../bitacora/">bitácora</a> publique.</p>
 
-<h2>Enregistrer et partager, avec l’appli</h2>
-<h3>Installer</h3>
-<ol>
-  <li><span class="lit">Pas d’Android ?</span> Enregistre dans le navigateur : ouvre <a href="../../?recorder">altred.xyz/AlpineFeministPunkParade/?recorder</a> dans Safari ou Chrome sur un Mac, un iPhone ou tout ordinateur, et autorise la position et le micro. Sur Mac, le Service de localisation doit être activé pour le navigateur (Réglages Système → Confidentialité et sécurité). Sur iPhone, garde l’écran allumé en marchant. Les sons restent dans ce navigateur jusqu’à ce que tu partages la dérive.</li>
-  <li>Sur un téléphone Android, télécharge <a href="../../deriva-sonora.apk" download>deriva-sonora.apk</a> et ouvre-le.</li>
-  <li>Android demande d’<span class="lit">autoriser l’installation d’applis depuis cette source</span> (navigateur ou gestionnaire de fichiers) : autorise-la pour cette installation.</li>
-  <li>L’appli s’appelle <span class="lit">Deriva Sonora</span>.</li>
-  <li>Au premier lancement elle demande un <span class="lit">alias</span> : il signe tes dérives. Si tu en partages une, il est public : pas besoin que ce soit ton nom. Tu peux rester anonyme.</li>
-  <li>Autorise la <span class="lit">position</span> (pour dessiner ta marche) et le <span class="lit">micro</span> (pour enregistrer). L’appli n’utilise jamais la position en arrière-plan.</li>
-</ol>
+<h2>Marcher et enregistrer</h2>
+<h3>La barre</h3>
+<ul>
+  <li>En bas, toujours : <span class="k">⌖ ici</span> (ou <span class="k">◯ planète</span> sur la carte) · <span class="k">● ENREGISTRER</span> · <span class="k">▶ COMMENCER UNE DÉRIVE</span> · <span class="k">≡ dérives</span>.</li>
+  <li>Dans un navigateur, rien ne demande ta position ni un nom tant que tu n’utilises pas l’un d’eux. La première fois que tu enregistres ou commences une dérive, tu choisis un <span class="lit">alias</span> : il signe tes dérives. Si tu en partages une il est public, il n’a donc pas besoin d’être ton nom ; tu peux rester anonyme.</li>
+</ul>
 <h3>Dériver et enregistrer</h3>
 <ul>
-  <li>Barre du bas : <span class="k">◯ globe</span> · <span class="k">● ENREGISTRER</span> · <span class="k">≡ dérives</span> ; sous enregistrer, <span class="k">▶ commencer une dérive</span>.</li>
-  <li>Attends que la précision GPS s’affiche en haut (<span class="lit">⌖ ±6 m</span>) : un son a besoin d’un lieu.</li>
-  <li><span class="k">● ENREGISTRER</span> ouvre le micro ; touche-le à nouveau (<span class="k">■</span>) pour arrêter (5 minutes au plus). Enregistrer lance une dérive s’il n’y en a pas.</li>
-  <li>À l’arrêt, nomme-le si tu veux (qu’entends-tu ?) et ajoute des notes, puis <span class="k">Garder</span> ou <span class="k">Jeter</span>.</li>
-  <li>Marche : ton tracé se dessine en <span class="lit">blanc</span> ; tu es le carré qui clignote. <span class="k">⌖</span> te suit à nouveau si tu as déplacé la carte.</li>
-  <li><span class="k">■ terminer la dérive</span> et donne-lui un nom. Si l’appli s’est fermée en chemin, la dérive reprend là où elle était.</li>
+  <li>Autorise la <span class="lit">position</span> (pour dessiner ta marche) et le <span class="lit">micro</span> (pour enregistrer). La carte vole vers toi ; la précision GPS s’affiche en haut (<span class="lit">⌖ ±6 m</span>) : un son a besoin d’un lieu.</li>
+  <li><span class="k">● ENREGISTRER</span> ouvre le micro ; touche-le encore (<span class="k">■</span>) pour arrêter (5 minutes au plus). Enregistrer commence une dérive s’il n’y en a pas.</li>
+  <li>Ensuite, nomme-le si tu veux (qu’entends-tu ?) et ajoute des notes, puis <span class="k">Garder</span> ou <span class="k">Jeter</span>.</li>
+  <li>Marche : ton tracé se dessine en <span class="lit">blanc</span> ; tu es le carré qui clignote.</li>
+  <li><span class="k">■ TERMINER LA DÉRIVE</span> et donne-lui un nom. Si l’appli s’est fermée en route, la dérive reprend où elle était.</li>
+</ul>
+<h3>Marcher en direct</h3>
+<ul>
+  <li>Pendant une dérive, <span class="k">◍ direct</span> la diffuse pendant que tu marches : tout le monde sur le site voit ton chemin (à un mètre près) et les noms de tes sons, et la planète devient ton tracklog.</li>
+  <li>Si tu veux, <span class="lit">ton micro aussi</span> : les personnes dans #AFPP entendent ce que tu entends, pendant que tu marches.</li>
+  <li>Elle demande à chaque fois. Rien n’est gardé : quand la dérive se termine, la marche en direct disparaît, sauf si tu la partages.</li>
 </ul>
 <h3>Partager</h3>
 <ul>
   <li>Après une dérive avec des sons, l’appli propose de la <span class="lit">partager sur la carte mondiale</span> ; ou plus tard, depuis <span class="k">≡ dérives</span>.</li>
-  <li>La première fois, elle explique ce qui devient public : ton alias, le titre et les heures, le tracé (arrondi à environ un mètre), les sons avec leurs noms et notes. La bitácora note que tu as partagé.</li>
-  <li>En quelques secondes, c’est un point blanc sur le globe, pour tout le monde.</li>
-  <li><span class="k">Sur la carte mondiale</span> → <span class="k">Oui</span> la retire du serveur (tracé et sons) et de la bitácora. Supprimer une dérive dans l’appli la retire aussi.</li>
-  <li>Hors ligne, tout reste sur le téléphone ; partage quand il y a du réseau.</li>
+  <li>La première fois, elle explique ce qui devient public : ton alias, le titre et les heures, le tracé (arrondi à un mètre près), les sons avec leurs noms et notes. La bitácora note que tu l’as partagée.</li>
+  <li>En quelques secondes c’est un point blanc sur la planète, et la planète la rejoue en tracklog pour qui regarde.</li>
+  <li><span class="k">Sur la carte mondiale</span> → <span class="k">Oui</span> la retire du serveur (tracé et sons) et de la bitácora. Supprimer une dérive la retire aussi.</li>
+  <li>Hors ligne, tout reste sur l’appareil ; partage quand il y a du réseau.</li>
 </ul>
-<h3>Écouter les autres dans l’appli</h3>
+<h3>L’appli Android</h3>
+<ol>
+  <li>Télécharge <a href="../../deriva-sonora.apk" download>deriva-sonora.apk</a> sur le téléphone et ouvre-le.</li>
+  <li>Android demande d’<span class="lit">autoriser l’installation d’applis depuis cette source</span> (le navigateur ou le gestionnaire de fichiers) : autorise-le pour cette installation.</li>
+  <li>L’appli s’appelle <span class="lit">Deriva Sonora</span>. Elle s’ouvre sur la planète et vole vers toi dès que le GPS a une position ; elle n’utilise jamais la position en arrière-plan.</li>
+  <li><span class="lit">Pas d’Android ?</span> La même appli fonctionne dans le navigateur : <a href="../../">altred.xyz/AlpineFeministPunkParade</a> dans Safari ou Chrome sur un Mac, un iPhone ou n’importe quel ordinateur. Sur un Mac, le Service de localisation doit être activé pour le navigateur (Réglages Système → Confidentialité et sécurité) ; sur un iPhone, garde l’écran allumé en marchant. Les sons restent dans ce navigateur jusqu’à ce que tu partages la dérive.</li>
+</ol>
+
+<h2>Le chat, #AFPP</h2>
 <ul>
-  <li>Sur la carte de l’appli, les dérives partagées près de toi sont en <span class="lit">pointillés</span> et leurs sons des carrés vides : touche pour écouter.</li>
-  <li><span class="k">◯ globe</span> ouvre le même globe et les mêmes anneaux que le web ; <span class="k">← Enregistreur</span> revient.</li>
+  <li>À côté de la carte (en dessous sur un téléphone) se trouve <span class="lit">#AFPP</span>, le chat de l’Alpine Feminist Punk Parade, relié à son groupe Telegram. Choisis un pseudo et <span class="k">Entrer</span>. <span class="k">/nick</span> change ton pseudo, <span class="k">/me</span> décrit une action ; touche son titre pour le replier.</li>
+  <li>Les lignes sont <span class="lit">retapées</span> au rythme où elles ont été écrites, hésitations et corrections comprises, et tu vois les autres écrire pendant qu’ils écrivent (<span class="lit">&gt; ana écrit ::</span>).</li>
+  <li><span class="k">voix · caméra</span> ouvre ton micro ou ta caméra aux personnes du chat. <span class="k">ascii</span> envoie ta caméra en texte seulement : l’image ne quitte jamais ton appareil.</li>
+  <li>Tout ce qui se dit dans #AFPP, et chaque dérive partagée, est gardé dans la <a href="../../bitacora/">bitácora</a> publique, où les lignes peuvent être rejouées comme elles ont été tapées.</li>
 </ul>
 
-<p class="note">Ce que tu ne partages pas ne quitte jamais ton téléphone. Pas de comptes, de publicité ni d’analyses. Une dérive partagée peut toujours être retirée.</p>
+<p class="note">Ce que tu ne partages pas ne quitte jamais ton appareil. Pas de comptes, de publicité ni d’analyses. Une dérive partagée peut toujours être retirée.</p>
 <footer>Alpine Feminist Punk Parade · Deriva Sonora · <a href="https://alejoduque.github.io/permasoftware-assembly/">permasoftware</a>, 1 bit · police Lugar Común (SIL OFL) · carte © OpenStreetMap</footer>
 </body>
 </html>

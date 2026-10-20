@@ -8,6 +8,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [AFPP] — 2026-10-20 — Deriva Sonora 1.1.0; no Vercel
 
 ### Changed
+- **The how-to pages** (en, de, fr, es) describe the one app: the planet and
+  the street map, the tracklog, the bar, recording, ◍ live, sharing, the APK
+  and the browser, and #AFPP with its typing replay, voices and ascii camera.
+  Long addresses wrap on a phone (the pages scrolled sideways).
 - **Deriva Sonora 1.1.0** (versionCode 10100), built from this repo, is the
   download at altred.xyz/AlpineFeministPunkParade/deriva-sonora.apk.
 - **AFPP is not on Vercel.** altred.xyz serves the site, the API, the relay

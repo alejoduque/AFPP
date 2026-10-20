@@ -7,7 +7,7 @@
 <title>How to use Deriva Sonora</title>
 <meta property="og:title" content="How to use Deriva Sonora">
 <meta property="og:image" content="https://altred.xyz/AlpineFeministPunkParade/afpp-card.png">
-<link rel="icon" href="../favicon.ico">
+<link rel="icon" href="../deriva-icon.png">
 <script src="../ticker/ticker.js" defer></script>
 <link rel="alternate" hreflang="en" href="https://altred.xyz/AlpineFeministPunkParade/howto/">
 <link rel="alternate" hreflang="de" href="https://altred.xyz/AlpineFeministPunkParade/howto/de/">
@@ -34,7 +34,7 @@
   h2 { font-size: 1.4rem; margin: 2.2em 0 0.6em; padding-top: 0.6em; border-top: 1px dashed var(--dim); }
   h3 { color: var(--lit); font-size: 1rem; margin: 1.6em 0 0.4em; }
   h3::before { content: '// '; color: var(--dim); }
-  p, li { max-width: 40rem; }
+  p, li { max-width: 40rem; overflow-wrap: anywhere; }  /* long addresses wrap on a phone */
   ol, ul { padding-left: 1.4em; }
   li { margin: 0.35em 0; }
   li::marker { color: var(--dim); }
@@ -53,7 +53,7 @@
 <header class="top">
   <b>DERIVA SONORA · AFPP</b>
   <nav>
-    <a href="../">globe</a>
+    <a href="../">open</a>
     <a href="../deriva-sonora.apk" download>Android app ↓</a>
     <a href="../bitacora/">bitácora</a>
     <span class="langs"><a href="./" hreflang="en" lang="en" aria-current="page" title="English">EN</a> <a href="de/" hreflang="de" lang="de" title="Deutsch">DE</a> <a href="fr/" hreflang="fr" lang="fr" title="Français">FR</a> <a href="es/" hreflang="es" lang="es" title="Español">ES</a></span>
@@ -64,70 +64,86 @@
 <figure class="art"><img src="../afpp-logo.png" width="900" height="1200" alt="Alpine Feminist Punk Parade: hand-lettered title over a drawing of an alpine village, a parade down the mountain road, and a long table of food."></figure>
 
 <h1>How to use<br>Deriva Sonora</h1>
-<p>Walkers anywhere record the sounds of their <span class="lit">derives</span> (aimless walks) and, if they choose, share them. Here they are heard: a globe with a dot wherever someone shared a derive, the map of each place, and the <span class="lit">rings</span> to mix distant sounds together. A project of the <span class="lit">Alpine Feminist Punk Parade</span>. Three tones only: black, purple, and white for whatever is active or sounding.</p>
+<p>Walkers anywhere record the sounds of their <span class="lit">derives</span> (aimless walks) and, if they choose, share them, even live as they walk. Here they are heard and talked about: a <span class="lit">planet</span> with a dot wherever someone shared a derive, the <span class="lit">street map</span> of each place, the <span class="lit">rings</span> to mix distant sounds, and <span class="lit">#AFPP</span>, the chat. It is one app, the same in a browser and on an Android phone. A project of the <span class="lit">Alpine Feminist Punk Parade</span>. Three tones only: black, purple, and white for whatever is active or sounding.</p>
 <div class="get">
-  <a class="main" href="../">Open the globe</a>
+  <a class="main" href="../">Open Deriva Sonora</a>
   <a href="../deriva-sonora.apk" download>Download the Android app (free)</a>
 </div>
 
-<h2>Listen, on the web</h2>
-<h3>The globe</h3>
+<h2>The planet and the map</h2>
+<h3>The planet</h3>
 <ul>
-  <li>Each <span class="lit">blinking dot</span> is a shared derive: the more recent, the faster it blinks; <span class="lit">white</span> if it is from the last hour or was just uploaded.</li>
-  <li><span class="k">drag</span> to turn it; the mouse wheel zooms. While the pointer is over the globe it stops spinning, so you can catch a dot.</li>
-  <li>Hover a dot to see who and how many sounds; <span class="k">click</span> to go there.</li>
+  <li>Each <span class="lit">blinking dot</span> is a shared derive: the more recent, the faster it blinks; <span class="lit">white</span> if it is from the last hour or was just shared.</li>
+  <li><span class="k">drag</span> to turn it. The mouse wheel or a pinch zooms; while the pointer is over the planet it stops spinning, so you can catch a dot.</li>
+  <li>Hover a dot to see who and how many sounds; <span class="k">click</span> it to fly there.</li>
+  <li>Keep zooming in and the planet <span class="lit">dives into the street map</span> at the place you are pointing at. Zoom the map far out and the planet comes back.</li>
 </ul>
-<h3>The map of the place</h3>
+<h3>The tracklog</h3>
 <ul>
-  <li>The globe turns to the dot and lands on a map of about <span class="lit">10 km</span>, drawn in purple lines.</li>
-  <li><span class="lit">Traces</span> are the walks, <span class="lit">squares</span> the sounds. Tap a trace to list its sounds, a square to hear it.</li>
-  <li><span class="k">▶</span> listens; <span class="k">→ rings</span> sends it to the mix; <span class="k">◯ Globe</span> goes back.</li>
+  <li>When someone shares a derive, or walks one <span class="lit">live</span>, the planet turns into a <span class="lit">tracklog</span>: it flies down to the walk and plays it in time, the walked path in purple, its last steps in white, each sound a ring that lights up when the walker reaches it.</li>
+  <li><span class="k">♪ listen</span> plays each sound as it is reached. <span class="k">◯ planet</span> (or <span class="k">Esc</span>) goes back; <span class="k">▶ tracklog</span> replays the latest walks.</li>
+  <li>A live walk is followed as it happens. If you are on the street map, a line offers to <span class="k">watch</span> instead of taking you away.</li>
+</ul>
+<h3>The street map</h3>
+<ul>
+  <li>Purple line art of the place. <span class="lit">Traces</span> are walks, <span class="lit">squares</span> their sounds. Tap a trace to list its sounds, a square to hear it.</li>
+  <li><span class="k">▶</span> listens; <span class="k">→ rings</span> sends it to the mix. Your own derives and sounds are there too, and anyone walking live right now is a <span class="lit">dashed white</span> line with a blinking walker.</li>
+  <li><span class="k">◯ planet</span> in the bar goes back up. <span class="k">⌖</span> follows you again if you moved the map.</li>
   <li>Every place has its own address (e.g. <span class="lit">…/AlpineFeministPunkParade/#46.5000,8.5000</span>): copy it to share that map.</li>
 </ul>
 <h3>The rings</h3>
 <ul>
-  <li>Open <span class="k">◎ rings</span> at the bottom. The sounds you sent wait on the edge: <span class="lit">drag them inside</span> the circle to hear them.</li>
+  <li>Open <span class="k">◎ rings</span>. The sounds you sent wait on the edge: <span class="lit">drag them inside</span> the circle to hear them.</li>
   <li>Closer to the centre is louder; left or right pans. Drop one outside and it waits again.</li>
   <li>Sounds from far-apart places can play together: that is the point. Each one loops.</li>
-  <li>Keyboard: <span class="k">Tab</span> to a sound, arrows to move it, <span class="k">Enter</span> in or out, <span class="k">Delete</span> to remove. Your mix is kept in your browser.</li>
+  <li>Keyboard: <span class="k">Tab</span> to a sound, arrows to move it, <span class="k">Enter</span> in or out, <span class="k">Delete</span> to remove. Your mix is kept on this device.</li>
 </ul>
-<h3>The chat and the bitácora</h3>
-<p>Beside the globe (below it on a phone) is <span class="lit">#AFPP</span>, the chat of the Alpine Feminist Punk Parade. Pick a nickname and <span class="k">Join</span>. <span class="k">/nick</span> renames you, <span class="k">/me</span> describes an action; tap its title to fold it away. Everything said in #AFPP, and every shared derive, is kept in the public <a href="../bitacora/">bitácora</a>.</p>
 
-<h2>Record and share, with the app</h2>
-<h3>Install</h3>
-<ol>
-  <li><span class="lit">No Android?</span> Record in the browser instead: open <a href="../?recorder">altred.xyz/AlpineFeministPunkParade/?recorder</a> in Safari or Chrome on a Mac, an iPhone or any computer, and allow location and the microphone. On a Mac, Location Services must be on for the browser (System Settings → Privacy &amp; Security). On an iPhone, keep the screen on while walking. Sounds stay in that browser until you share the derive.</li>
-  <li>On an Android phone, download <a href="../deriva-sonora.apk" download>deriva-sonora.apk</a> and open it.</li>
-  <li>Android asks to <span class="lit">allow installing apps from this source</span> (the browser or file manager): allow it for this install.</li>
-  <li>The app is called <span class="lit">Deriva Sonora</span>.</li>
-  <li>First run asks for an <span class="lit">alias</span>: it signs your derives. If you share one it is public, so it need not be your name. You can stay anonymous.</li>
-  <li>Allow <span class="lit">location</span> (to draw your walk) and the <span class="lit">microphone</span> (to record). The app never uses location in the background.</li>
-</ol>
+<h2>Walk and record</h2>
+<h3>The bar</h3>
+<ul>
+  <li>At the bottom, always: <span class="k">⌖ here</span> (or <span class="k">◯ planet</span> on the map) · <span class="k">● RECORD</span> · <span class="k">▶ START DERIVE</span> · <span class="k">≡ derives</span>.</li>
+  <li>In a browser nothing asks for your location or a name until you use one of them. The first time you record or start a derive you choose an <span class="lit">alias</span>: it signs your derives. If you share one it is public, so it need not be your name; you can stay anonymous.</li>
+</ul>
 <h3>Derive and record</h3>
 <ul>
-  <li>Bottom bar: <span class="k">◯ globe</span> · <span class="k">● RECORD</span> · <span class="k">≡ derives</span>; under record, <span class="k">▶ start derive</span>.</li>
-  <li>Wait for the GPS accuracy at the top (<span class="lit">⌖ ±6 m</span>): a sound needs a place.</li>
+  <li>Allow <span class="lit">location</span> (to draw your walk) and the <span class="lit">microphone</span> (to record). The map flies to you; the GPS accuracy shows at the top (<span class="lit">⌖ ±6 m</span>): a sound needs a place.</li>
   <li><span class="k">● RECORD</span> opens the mic; tap it again (<span class="k">■</span>) to stop (5 minutes at most). Recording starts a derive if none is running.</li>
   <li>When you stop, name it if you like (what do you hear?) and add notes, then <span class="k">Keep</span> or <span class="k">Discard</span>.</li>
-  <li>Walk: your trace draws in <span class="lit">white</span>; you are the blinking square. <span class="k">⌖</span> follows you again if you moved the map.</li>
-  <li><span class="k">■ end derive</span> and give it a name. If the app closed mid-walk, the derive resumes where it was.</li>
+  <li>Walk: your trace draws in <span class="lit">white</span>; you are the blinking square.</li>
+  <li><span class="k">■ END DERIVE</span> and give it a name. If the app closed mid-walk, the derive resumes where it was.</li>
+</ul>
+<h3>Walk live</h3>
+<ul>
+  <li>During a derive, <span class="k">◍ live</span> streams it as you walk: everyone on the site sees your path (to about a metre) and the names of your sounds, and the planet turns into your tracklog.</li>
+  <li>Optionally <span class="lit">your microphone too</span>: the people in #AFPP hear what you hear, while you walk.</li>
+  <li>It asks each time. Nothing is kept: when the derive ends the live walk is gone, unless you share it.</li>
 </ul>
 <h3>Share</h3>
 <ul>
   <li>After a derive with sounds the app offers to <span class="lit">share it to the global map</span>; or later, from <span class="k">≡ derives</span>.</li>
   <li>The first time it explains what becomes public: your alias, the title and times, the trace (rounded to about a metre), the sounds with their names and notes. The bitácora notes that you shared it.</li>
-  <li>Within seconds it is a white dot on the globe, for anyone.</li>
-  <li><span class="k">On the global map</span> → <span class="k">Yes</span> removes it from the server (trace and sounds), and from the bitácora. Deleting a derive in the app removes it too.</li>
-  <li>Offline, everything stays on the phone; share when there is a network.</li>
+  <li>Within seconds it is a white dot on the planet, and the planet plays it as a tracklog for whoever is looking.</li>
+  <li><span class="k">On the global map</span> → <span class="k">Yes</span> removes it from the server (trace and sounds), and from the bitácora. Deleting a derive removes it too.</li>
+  <li>Offline, everything stays on the device; share when there is a network.</li>
 </ul>
-<h3>Listen to others in the app</h3>
+<h3>The Android app</h3>
+<ol>
+  <li>Download <a href="../deriva-sonora.apk" download>deriva-sonora.apk</a> on the phone and open it.</li>
+  <li>Android asks to <span class="lit">allow installing apps from this source</span> (the browser or file manager): allow it for this install.</li>
+  <li>The app is called <span class="lit">Deriva Sonora</span>. It opens on the planet and flies to you once the GPS has a fix; it never uses location in the background.</li>
+  <li><span class="lit">No Android?</span> The same app works in the browser: <a href="../">altred.xyz/AlpineFeministPunkParade</a> in Safari or Chrome on a Mac, an iPhone or any computer. On a Mac, Location Services must be on for the browser (System Settings → Privacy &amp; Security); on an iPhone, keep the screen on while walking. Sounds stay in that browser until you share the derive.</li>
+</ol>
+
+<h2>The chat, #AFPP</h2>
 <ul>
-  <li>On the app’s map, derives shared near you are <span class="lit">dashed</span> and their sounds are hollow squares: tap to listen.</li>
-  <li><span class="k">◯ globe</span> opens the same globe and rings as the web; <span class="k">← Recorder</span> goes back.</li>
+  <li>Beside the map (below it on a phone) is <span class="lit">#AFPP</span>, the chat of the Alpine Feminist Punk Parade, bridged with its Telegram group. Pick a nickname and <span class="k">Join</span>. <span class="k">/nick</span> renames you, <span class="k">/me</span> describes an action; tap its title to fold it away.</li>
+  <li>Lines are <span class="lit">typed out again</span> at the pace they were written, hesitations and corrections included, and you see the others writing as they write (<span class="lit">&gt; ana writes ::</span>).</li>
+  <li><span class="k">voice · camera</span> opens your microphone or camera to the people in the chat. <span class="k">ascii</span> sends your camera as text only: the image never leaves your device.</li>
+  <li>Everything said in #AFPP, and every shared derive, is kept in the public <a href="../bitacora/">bitácora</a>, where lines can be played back as they were typed.</li>
 </ul>
 
-<p class="note">What you do not share never leaves your phone. No accounts, ads or analytics. A shared derive can always be removed.</p>
+<p class="note">What you do not share never leaves your device. No accounts, ads or analytics. A shared derive can always be removed.</p>
 <footer>Alpine Feminist Punk Parade · Deriva Sonora · <a href="https://alejoduque.github.io/permasoftware-assembly/">permasoftware</a>, 1-bit · typeface Lugar Común (SIL OFL) · map © OpenStreetMap</footer>
 </body>
 </html>

@@ -7,7 +7,7 @@
 <title>Deriva Sonora: cómo usar</title>
 <meta property="og:title" content="Deriva Sonora: cómo usar">
 <meta property="og:image" content="https://altred.xyz/AlpineFeministPunkParade/afpp-card.png">
-<link rel="icon" href="../../favicon.ico">
+<link rel="icon" href="../../deriva-icon.png">
 <script src="../../ticker/ticker.js" defer></script>
 <link rel="alternate" hreflang="en" href="https://altred.xyz/AlpineFeministPunkParade/howto/">
 <link rel="alternate" hreflang="de" href="https://altred.xyz/AlpineFeministPunkParade/howto/de/">
@@ -34,7 +34,7 @@
   h2 { font-size: 1.4rem; margin: 2.2em 0 0.6em; padding-top: 0.6em; border-top: 1px dashed var(--dim); }
   h3 { color: var(--lit); font-size: 1rem; margin: 1.6em 0 0.4em; }
   h3::before { content: '// '; color: var(--dim); }
-  p, li { max-width: 40rem; }
+  p, li { max-width: 40rem; overflow-wrap: anywhere; }  /* long addresses wrap on a phone */
   ol, ul { padding-left: 1.4em; }
   li { margin: 0.35em 0; }
   li::marker { color: var(--dim); }
@@ -53,7 +53,7 @@
 <header class="top">
   <b>DERIVA SONORA · AFPP</b>
   <nav>
-    <a href="../../">globo</a>
+    <a href="../../">abrir</a>
     <a href="../../deriva-sonora.apk" download>app Android ↓</a>
     <a href="../../bitacora/">bitácora</a>
     <span class="langs"><a href="../" hreflang="en" lang="en" title="English">EN</a> <a href="../de/" hreflang="de" lang="de" title="Deutsch">DE</a> <a href="../fr/" hreflang="fr" lang="fr" title="Français">FR</a> <a href="../es/" hreflang="es" lang="es" aria-current="page" title="Español">ES</a></span>
@@ -64,70 +64,86 @@
 <figure class="art"><img src="../../afpp-logo.png" width="900" height="1200" alt="Alpine Feminist Punk Parade: título escrito a mano sobre un dibujo de un pueblo alpino, un desfile por la carretera de montaña y una larga mesa con comida."></figure>
 
 <h1>Cómo usar<br>Deriva Sonora</h1>
-<p>Caminantes de cualquier lugar graban los sonidos de sus <span class="lit">derivas</span> (caminatas sin rumbo) y, si quieren, las comparten. Aquí se escuchan: un globo con un punto donde alguien compartió una deriva, el mapa de cada lugar, y los <span class="lit">anillos</span> para mezclar sonidos lejanos. Un proyecto de la <span class="lit">Alpine Feminist Punk Parade</span>. Solo tres tonos: negro, morado y blanco para lo que está activo o sonando.</p>
+<p>Caminantes de cualquier lugar graban los sonidos de sus <span class="lit">derivas</span> (caminatas sin rumbo) y, si quieren, las comparten, incluso en vivo mientras caminan. Aquí se escuchan y se conversan: un <span class="lit">planeta</span> con un punto donde alguien compartió una deriva, el <span class="lit">mapa de calles</span> de cada lugar, los <span class="lit">anillos</span> para mezclar sonidos lejanos y <span class="lit">#AFPP</span>, el chat. Es una sola app, igual en un navegador y en un teléfono Android. Un proyecto de la <span class="lit">Alpine Feminist Punk Parade</span>. Solo tres tonos: negro, morado y blanco para lo que está activo o sonando.</p>
 <div class="get">
-  <a class="main" href="../../">Abrir el globo</a>
+  <a class="main" href="../../">Abrir Deriva Sonora</a>
   <a href="../../deriva-sonora.apk" download>Descargar la app Android (gratis)</a>
 </div>
 
-<h2>Escuchar, en la web</h2>
-<h3>El globo</h3>
+<h2>El planeta y el mapa</h2>
+<h3>El planeta</h3>
 <ul>
-  <li>Cada <span class="lit">punto que parpadea</span> es una deriva compartida: cuanto más reciente, más rápido parpadea; <span class="lit">blanco</span> si es de la última hora o acaba de subirse.</li>
-  <li><span class="k">arrastra</span> para girarlo; la rueda del ratón acerca. Mientras el puntero está sobre el globo, deja de girar para que puedas atrapar un punto.</li>
-  <li>Pasa sobre un punto para ver quién y cuántos sonidos; <span class="k">clic</span> para ir allí.</li>
+  <li>Cada <span class="lit">punto que parpadea</span> es una deriva compartida: cuanto más reciente, más rápido parpadea; <span class="lit">blanco</span> si es de la última hora o se acaba de compartir.</li>
+  <li><span class="k">Arrastrar</span> lo gira. La rueda del ratón o dos dedos hacen zoom; mientras el puntero está sobre el planeta se detiene, para atrapar un punto.</li>
+  <li>Pasa sobre un punto para ver quién y cuántos sonidos; <span class="k">clic</span> para volar allí.</li>
+  <li>Sigue acercándote y el planeta <span class="lit">se sumerge en el mapa de calles</span> en el lugar que señalas. Aleja mucho el mapa y el planeta vuelve.</li>
 </ul>
-<h3>El mapa del lugar</h3>
+<h3>La bitácora de rutas</h3>
 <ul>
-  <li>El globo gira hasta el punto y aterriza en un mapa de unos <span class="lit">10 km</span>, dibujado en líneas moradas.</li>
-  <li>Los <span class="lit">trazos</span> son los recorridos; los <span class="lit">cuadrados</span>, los sonidos. Toca un trazo para ver sus sonidos, o un cuadrado para escucharlo.</li>
-  <li><span class="k">▶</span> escucha; <span class="k">→ anillos</span> lo manda a la mezcla; <span class="k">◯ Globo</span> vuelve.</li>
-  <li>Cada lugar tiene su dirección (p. ej. <span class="lit">…/AlpineFeministPunkParade/#46.5000,8.5000</span>): cópiala para compartir ese mapa.</li>
+  <li>Cuando alguien comparte una deriva, o camina <span class="lit">en vivo</span>, el planeta se vuelve una <span class="lit">bitácora de rutas</span>: baja hasta la caminata y la reproduce en su tiempo, el camino recorrido en morado, los últimos pasos en blanco, cada sonido un anillo que se enciende cuando quien camina lo alcanza.</li>
+  <li><span class="k">♪ escuchar</span> suena cada sonido cuando se alcanza. <span class="k">◯ planeta</span> (o <span class="k">Esc</span>) vuelve; <span class="k">▶ bitácora de rutas</span> repite las últimas caminatas.</li>
+  <li>Una caminata en vivo se sigue mientras sucede. Si estás en el mapa de calles, una línea te ofrece <span class="k">ver</span> en vez de llevarte.</li>
+</ul>
+<h3>El mapa de calles</h3>
+<ul>
+  <li>El lugar en líneas moradas. Los <span class="lit">trazos</span> son caminatas, los <span class="lit">cuadrados</span> sus sonidos. Toca un trazo para ver sus sonidos, un cuadrado para escucharlo.</li>
+  <li><span class="k">▶</span> escucha; <span class="k">→ anillos</span> lo manda a la mezcla. Tus propias derivas y sonidos también están, y quien camina en vivo ahora es una línea <span class="lit">blanca punteada</span> con alguien que parpadea.</li>
+  <li><span class="k">◯ planeta</span> en la barra vuelve arriba. <span class="k">⌖</span> te sigue de nuevo si moviste el mapa.</li>
+  <li>Cada lugar tiene su propia dirección (p. ej. <span class="lit">…/AlpineFeministPunkParade/#46.5000,8.5000</span>): cópiala para compartir ese mapa.</li>
 </ul>
 <h3>Los anillos</h3>
 <ul>
-  <li>Ábrelos con <span class="k">◎ anillos</span>, abajo. Los sonidos que mandaste esperan en el borde: <span class="lit">arrástralos adentro</span> del círculo para oírlos.</li>
+  <li>Ábrelos con <span class="k">◎ anillos</span>. Los sonidos que mandaste esperan en el borde: <span class="lit">arrástralos adentro</span> del círculo para oírlos.</li>
   <li>Más cerca del centro, más fuerte; a la izquierda o la derecha, se oye por ese lado. Suéltalo afuera y vuelve a esperar.</li>
   <li>Pueden sonar juntos sonidos de lugares muy lejanos: esa es la idea. Cada uno suena en bucle.</li>
-  <li>Teclado: <span class="k">Tab</span> hasta un sonido, flechas para moverlo, <span class="k">Enter</span> para entrar o salir, <span class="k">Supr</span> para quitarlo. Tu mezcla se guarda en tu navegador.</li>
+  <li>Teclado: <span class="k">Tab</span> hasta un sonido, flechas para moverlo, <span class="k">Enter</span> para entrar o salir, <span class="k">Supr</span> para quitarlo. Tu mezcla se guarda en este dispositivo.</li>
 </ul>
-<h3>El chat y la bitácora</h3>
-<p>Junto al globo (debajo, en el teléfono) está <span class="lit">#AFPP</span>, el chat de la Alpine Feminist Punk Parade. Elige un apodo y <span class="k">Entrar</span>. <span class="k">/nick</span> cambia tu apodo, <span class="k">/me</span> describe una acción; toca su título para plegarlo. Todo lo que se dice en #AFPP, y cada deriva compartida, queda en la <a href="../../bitacora/">bitácora</a> pública.</p>
 
-<h2>Grabar y compartir, con la app</h2>
-<h3>Instalar</h3>
-<ol>
-  <li><span class="lit">¿Sin Android?</span> Graba en el navegador: abre <a href="../../?recorder">altred.xyz/AlpineFeministPunkParade/?recorder</a> en Safari o Chrome en un Mac, un iPhone o cualquier computador, y permite la ubicación y el micrófono. En el Mac, la Localización debe estar activada para el navegador (Ajustes del Sistema → Privacidad y seguridad). En el iPhone, deja la pantalla encendida mientras caminas. Los sonidos quedan en ese navegador hasta que compartas la deriva.</li>
-  <li>En un teléfono Android, descarga <a href="../../deriva-sonora.apk" download>deriva-sonora.apk</a> y ábrelo.</li>
-  <li>Android pedirá <span class="lit">permitir instalar apps de esta fuente</span> (navegador o gestor de archivos): permítelo para esta instalación.</li>
-  <li>La app se llama <span class="lit">Deriva Sonora</span>.</li>
-  <li>La primera vez pide un <span class="lit">alias</span>: firma tus derivas. Si compartes una, es público, así que no tiene que ser tu nombre. Puedes seguir anónimo.</li>
-  <li>Acepta la <span class="lit">ubicación</span> (para dibujar tu recorrido) y el <span class="lit">micrófono</span> (para grabar). La app nunca usa la ubicación en segundo plano.</li>
-</ol>
+<h2>Caminar y grabar</h2>
+<h3>La barra</h3>
+<ul>
+  <li>Abajo, siempre: <span class="k">⌖ aquí</span> (o <span class="k">◯ planeta</span> en el mapa) · <span class="k">● GRABAR</span> · <span class="k">▶ INICIAR DERIVA</span> · <span class="k">≡ derivas</span>.</li>
+  <li>En un navegador nada te pide la ubicación ni un nombre hasta que usas uno de ellos. La primera vez que grabas o inicias una deriva eliges un <span class="lit">alias</span>: firma tus derivas. Si compartes una es público, así que no tiene que ser tu nombre; puedes seguir anónimo.</li>
+</ul>
 <h3>Derivar y grabar</h3>
 <ul>
-  <li>Abajo: <span class="k">◯ globo</span> · <span class="k">● GRABAR</span> · <span class="k">≡ derivas</span>; bajo grabar, <span class="k">▶ iniciar deriva</span>.</li>
-  <li>Espera a que arriba aparezca la precisión del GPS (<span class="lit">⌖ ±6 m</span>): un sonido necesita un lugar.</li>
-  <li><span class="k">● GRABAR</span> abre el micrófono; vuelve a tocarlo (<span class="k">■</span>) para parar (máximo 5 minutos). Si no habías iniciado una deriva, grabar la inicia.</li>
-  <li>Al parar, ponle nombre si quieres (¿qué escuchas?) y notas, y <span class="k">Guardar</span> o <span class="k">Descartar</span>.</li>
-  <li>Camina: tu recorrido se dibuja en <span class="lit">blanco</span>; tú eres el cuadrado que parpadea. <span class="k">⌖</span> vuelve a seguirte si moviste el mapa.</li>
-  <li><span class="k">■ terminar deriva</span> y dale un nombre. Si la app se cerró a mitad de camino, la deriva sigue donde iba.</li>
+  <li>Permite la <span class="lit">ubicación</span> (para dibujar tu caminata) y el <span class="lit">micrófono</span> (para grabar). El mapa vuela hacia ti; la precisión del GPS aparece arriba (<span class="lit">⌖ ±6 m</span>): un sonido necesita un lugar.</li>
+  <li><span class="k">● GRABAR</span> abre el micrófono; tócalo otra vez (<span class="k">■</span>) para parar (5 minutos como máximo). Grabar inicia una deriva si no hay ninguna.</li>
+  <li>Al parar, nómbralo si quieres (¿qué escuchas?) y añade notas; luego <span class="k">Guardar</span> o <span class="k">Descartar</span>.</li>
+  <li>Camina: tu trazo se dibuja en <span class="lit">blanco</span>; tú eres el cuadrado que parpadea.</li>
+  <li><span class="k">■ TERMINAR DERIVA</span> y ponle un nombre. Si la app se cerró a mitad de camino, la deriva sigue donde estaba.</li>
+</ul>
+<h3>Caminar en vivo</h3>
+<ul>
+  <li>Durante una deriva, <span class="k">◍ en vivo</span> la transmite mientras caminas: todas las personas en el sitio ven tu recorrido (a un metro, más o menos) y los nombres de tus sonidos, y el planeta se vuelve tu bitácora de rutas.</li>
+  <li>Si quieres, <span class="lit">también tu micrófono</span>: quienes están en #AFPP escuchan lo que escuchas, mientras caminas.</li>
+  <li>Pregunta cada vez. No se guarda nada: al terminar la deriva la caminata en vivo desaparece, salvo que la compartas.</li>
 </ul>
 <h3>Compartir</h3>
 <ul>
-  <li>Al terminar una deriva con sonidos, la app ofrece <span class="lit">compartirla al mapa global</span>; o después, desde <span class="k">≡ derivas</span>.</li>
-  <li>La primera vez explica qué se vuelve público: tu alias, el título y las horas, el recorrido (redondeado a cerca de un metro) y los sonidos con su nombre y notas. La bitácora anota que la compartiste.</li>
-  <li>En segundos es un punto blanco en el globo, para cualquiera.</li>
-  <li><span class="k">En el mapa global</span> → <span class="k">Sí</span> la quita del servidor (recorrido y sonidos) y de la bitácora. Borrar una deriva en la app también la quita.</li>
-  <li>Sin conexión, todo queda en el teléfono; compártela cuando haya red.</li>
+  <li>Después de una deriva con sonidos la app ofrece <span class="lit">compartirla en el mapa global</span>; o después, desde <span class="k">≡ derivas</span>.</li>
+  <li>La primera vez explica qué se vuelve público: tu alias, el título y las horas, el trazo (redondeado a un metro, más o menos), los sonidos con sus nombres y notas. La bitácora anota que la compartiste.</li>
+  <li>En segundos es un punto blanco en el planeta, y el planeta la reproduce como bitácora de rutas para quien esté mirando.</li>
+  <li><span class="k">En el mapa global</span> → <span class="k">Sí</span> la quita del servidor (trazo y sonidos) y de la bitácora. Borrar una deriva también la quita.</li>
+  <li>Sin conexión todo queda en el dispositivo; comparte cuando haya red.</li>
 </ul>
-<h3>Escuchar a otros desde la app</h3>
+<h3>La app Android</h3>
+<ol>
+  <li>Descarga <a href="../../deriva-sonora.apk" download>deriva-sonora.apk</a> en el teléfono y ábrelo.</li>
+  <li>Android pide <span class="lit">permitir instalar apps de esta fuente</span> (el navegador o el gestor de archivos): permítelo para esta instalación.</li>
+  <li>La app se llama <span class="lit">Deriva Sonora</span>. Abre en el planeta y vuela hacia ti en cuanto el GPS tiene posición; nunca usa la ubicación en segundo plano.</li>
+  <li><span class="lit">¿Sin Android?</span> La misma app funciona en el navegador: <a href="../../">altred.xyz/AlpineFeministPunkParade</a> en Safari o Chrome en un Mac, un iPhone o cualquier computador. En un Mac, los Servicios de localización deben estar activos para el navegador (Ajustes del Sistema → Privacidad y seguridad); en un iPhone, mantén la pantalla encendida mientras caminas. Los sonidos quedan en ese navegador hasta que compartas la deriva.</li>
+</ol>
+
+<h2>El chat, #AFPP</h2>
 <ul>
-  <li>En el mapa de la app, las derivas compartidas cerca de ti aparecen <span class="lit">punteadas</span> y sus sonidos como cuadrados huecos: tócalos para escuchar.</li>
-  <li><span class="k">◯ globo</span> abre el mismo globo y anillos de la web; <span class="k">← Grabadora</span> vuelve.</li>
+  <li>Junto al mapa (debajo en un teléfono) está <span class="lit">#AFPP</span>, el chat de la Alpine Feminist Punk Parade, enlazado con su grupo de Telegram. Elige un apodo y <span class="k">Entrar</span>. <span class="k">/nick</span> cambia tu apodo, <span class="k">/me</span> describe una acción; toca su título para plegarlo.</li>
+  <li>Las líneas se <span class="lit">vuelven a escribir</span> al ritmo en que se escribieron, con dudas y correcciones, y ves a las demás personas escribir mientras escriben (<span class="lit">&gt; ana escribe ::</span>).</li>
+  <li><span class="k">voz · cámara</span> abre tu micrófono o tu cámara a quienes están en el chat. <span class="k">ascii</span> envía tu cámara solo como texto: la imagen nunca sale de tu dispositivo.</li>
+  <li>Todo lo que se dice en #AFPP, y cada deriva compartida, queda en la <a href="../../bitacora/">bitácora</a> pública, donde las líneas se pueden reproducir como se escribieron.</li>
 </ul>
 
-<p class="note">Lo que no compartes no sale de tu teléfono. Sin cuentas, publicidad ni analítica. Una deriva compartida se puede quitar siempre.</p>
+<p class="note">Lo que no compartes no sale de tu dispositivo. Sin cuentas, publicidad ni analítica. Una deriva compartida se puede quitar siempre.</p>
 <footer>Alpine Feminist Punk Parade · Deriva Sonora · <a href="https://alejoduque.github.io/permasoftware-assembly/">permasoftware</a>, 1 bit · tipografía Lugar Común (SIL OFL) · mapa © OpenStreetMap</footer>
 </body>
 </html>
