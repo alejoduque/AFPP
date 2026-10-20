@@ -75,14 +75,16 @@ function flight(from, to, ms, done) {
   const interp = geoInterpolate(from.center, to.center);
   const l0 = Math.log(from.zoom);
   const l1 = Math.log(to.zoom);
-  const inPlace = dist < 1e-4;
+  // a target already on screen (diving to the pointer) needs no hop: the centre
+  // arrives early, while the zoom is still low, then the zoom carries on
+  const near = dist * Math.min(from.zoom, to.zoom) <= 1;
   const lm = Math.log(Math.max(1, Math.min(from.zoom, to.zoom, dist > 0 ? 1 / dist : Infinity)));
   return {
     t0: null,
     ms,
     done,
     at(e) {
-      if (inPlace) return { center: to.center, zoom: Math.exp(l0 + (l1 - l0) * ease(e)) };
+      if (near) return { center: interp(1 - Math.pow(1 - e, 3)), zoom: Math.exp(l0 + (l1 - l0) * ease(e)) };
       const z = e < 0.5 ? l0 + (lm - l0) * ease(e * 2) : lm + (l1 - lm) * ease((e - 0.5) * 2);
       return { center: interp(ease(e)), zoom: Math.exp(z) };
     },
@@ -516,19 +518,26 @@ export default function GlobeView({ activity, flashes, focus, from, onSelect, on
       return best;
     };
 
-    /** Zoom by a factor; past the free limit (outside the tracklog) the planet dives into the map. */
-    function zoomBy(factor) {
+    /**
+     * Zoom by a factor; past the free limit (outside the tracklog) the planet
+     * dives into the map, towards `at` (canvas px: the pointer, the pinch) when
+     * that is on the sphere, else towards the centre.
+     */
+    function zoomBy(factor, at) {
       const s = state.current;
       if (s.flight) return;
       const next = s.zoom * factor;
-      if (!s.track && next > GLOBE_FREE_MAX && s.onZoomIn) return dive();
+      if (!s.track && next > GLOBE_FREE_MAX && s.onZoomIn) return dive(at);
       const max = s.track ? MAX_ZOOM : GLOBE_FREE_MAX;
       s.zoom = Math.max(0.7, Math.min(max, next));
       s.idleSince = performance.now();
     }
-    function dive() {
+    function dive(at) {
       const s = state.current;
-      const [lng, lat] = [-s.rotate[0], -s.rotate[1]];
+      const center = [-s.rotate[0], -s.rotate[1]];
+      const p = at && projection.invert(at);
+      const onSphere = p && Number.isFinite(p[0]) && geoDistance(p, center) < Math.PI / 2 - 0.01;
+      const [lng, lat] = onSphere ? p : center;
       const done = () => s.onZoomIn?.({ lat, lng, zoom: MAP_ENTRY_ZOOM });
       setHover(null);
       if (reduced) return done();
@@ -558,7 +567,10 @@ export default function GlobeView({ activity, flashes, focus, from, onSelect, on
       if (s.pointers.has(e.pointerId)) s.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (s.pointers.size === 2 && s.pinch) {
         const d = pinch();
-        if (d > 0) zoomBy(d / s.pinch);
+        const [a, b] = [...s.pointers.values()];
+        const r = canvas.getBoundingClientRect();
+        const mid = [(((a.x + b.x) / 2 - r.left) / r.width) * size.w, (((a.y + b.y) / 2 - r.top) / r.height) * size.h];
+        if (d > 0) zoomBy(d / s.pinch, mid);
         s.pinch = d;
         return;
       }
@@ -605,7 +617,7 @@ export default function GlobeView({ activity, flashes, focus, from, onSelect, on
     }
     function wheel(e) {
       e.preventDefault();
-      zoomBy(Math.exp(-e.deltaY * 0.0015));
+      zoomBy(Math.exp(-e.deltaY * 0.0015), toCanvas(e));
     }
     function fly(d) {
       const s = state.current;
