@@ -529,15 +529,30 @@ export default function GlobeView({ activity, flashes, focus, from, onSelect, on
       const next = s.zoom * factor;
       if (!s.track && next > GLOBE_FREE_MAX && s.onZoomIn) return dive(at);
       const max = s.track ? MAX_ZOOM : GLOBE_FREE_MAX;
+      // Zoom about the pointer: the place under it stays under it. Scaling about
+      // the centre slid it away, so the dive landed wherever had drifted under
+      // the pointer (or on the centre, once it had slid past the rim).
+      const p = at && pointAt(at);
       s.zoom = Math.max(0.7, Math.min(max, next));
       s.idleSince = performance.now();
+      for (let i = 0; p && i < 2; i++) {
+        projection.scale(radius()).rotate(s.rotate);
+        const q = projection.invert(at);
+        if (!q || !Number.isFinite(q[0]) || !Number.isFinite(q[1])) break;
+        const dLng = ((p[0] - q[0] + 540) % 360) - 180; // the short way round the antimeridian
+        s.rotate = [s.rotate[0] - dLng, Math.max(-85, Math.min(85, s.rotate[1] - (p[1] - q[1])))];
+      }
+    }
+    /** The [lng, lat] under canvas px `at`, when that is on the visible sphere. */
+    function pointAt(at) {
+      projection.scale(radius()).rotate(state.current.rotate);
+      const p = projection.invert(at);
+      const center = [-state.current.rotate[0], -state.current.rotate[1]];
+      return p && Number.isFinite(p[0]) && Number.isFinite(p[1]) && geoDistance(p, center) < Math.PI / 2 - 0.01 ? p : null;
     }
     function dive(at) {
       const s = state.current;
-      const center = [-s.rotate[0], -s.rotate[1]];
-      const p = at && projection.invert(at);
-      const onSphere = p && Number.isFinite(p[0]) && geoDistance(p, center) < Math.PI / 2 - 0.01;
-      const [lng, lat] = onSphere ? p : center;
+      const [lng, lat] = (at && pointAt(at)) || [-s.rotate[0], -s.rotate[1]];
       const done = () => s.onZoomIn?.({ lat, lng, zoom: MAP_ENTRY_ZOOM });
       setHover(null);
       if (reduced) return done();
