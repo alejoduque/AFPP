@@ -86,7 +86,7 @@ server/afpp/deploy/deploy.sh push       # upload + restart + health check
 The site itself goes up with every push to `main` (GitHub Actions, `docs/DEPLOY.md`);
 APK builds point at `https://altred.xyz/AlpineFeministPunkParade/afpp` by default.
 
-Moderation: `curl -X DELETE -H "Authorization: Bearer $ADMIN_TOKEN" https://altred.xyz/AlpineFeministPunkParade/afpp/api/derives/<id>`.
+Moderation: on the server, `node /opt/afpp/tools/admin.mjs` lists every shared derive and its sounds and deletes what you pick (whole derives, or single sounds); `list` and `delete <id>... --yes` for scripts. Or by hand: `curl -X DELETE -H "Authorization: Bearer $ADMIN_TOKEN" https://altred.xyz/AlpineFeministPunkParade/afpp/api/derives/<id>`.
 Backups: `DATA_DIR` is the whole state, so rsync `/var/lib/afpp`.
 
 ## The chat's assembly: room relay and TURN
