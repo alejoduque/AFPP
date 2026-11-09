@@ -855,3 +855,19 @@
 .afpp-layers header { display: flex; gap: 8px; align-items: baseline; color: var(--lit); }
 .afpp-layers header .afpp-x { margin-left: auto; font-size: 18px; }
 .afpp-layers p { margin: 0; }
+
+/* Solo / Together */
+.afpp-seg { display: inline-flex; border: 1px solid var(--ink); }
+.afpp-seg button {
+  font: inherit;
+  color: var(--ink);
+  background: var(--ground);
+  border: 0;
+  padding: 4px 12px;
+  min-height: 32px;
+  cursor: pointer;
+}
+.afpp-seg button + button { border-left: 1px solid var(--ink); }
+.afpp-seg button.is-on { background: var(--ink); color: var(--ground); }
+.afpp-seg button:focus-visible { outline: 1px solid var(--lit); outline-offset: 1px; }
+.afpp-rings__note { margin: 0; font-size: 11px; text-align: center; }

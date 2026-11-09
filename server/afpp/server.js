@@ -24,6 +24,7 @@ import { Store, ID_RE, AUDIO_TYPES, EXT_TYPES, activityOf, publicView } from './
 import { Bitacora } from './lib/bitacora.js';
 import { startIrcLogger } from './lib/irc.js';
 import { startTelegram, toTelegram } from './lib/telegram.js';
+import { Ring, RingCast, icecastTarget, ringMount } from './lib/ring.js';
 
 const MAX_JSON = 2 * 1024 * 1024;
 
@@ -43,6 +44,17 @@ export function createAfppServer(opts = {}) {
   const bitacora = new Bitacora(path.join(store.dir, 'bitacora'));
   // A shared derive shows in the bitácora only while it is still shared.
   const visible = (ev) => ev.tipo !== 'deriva' || !!store.get(ev.deriva);
+  // The shared rings: one mix for everyone, streamed through Icecast (lib/ring.js).
+  const ring = new Ring({ store, file: path.join(store.dir, 'ring.json'), onChange: (st) => ringChanged(st) });
+  const ringTarget = icecastTarget(env);
+  const cast = ringTarget
+    ? new RingCast({ ring, target: ringTarget, ffmpeg: env.FFMPEG || 'ffmpeg', onStreaming: () => broadcast('ring', ring.state()) })
+    : null;
+  function ringChanged(st) {
+    broadcast('ring', st);
+    cast?.update();
+  }
+  cast?.update(); // a ring kept from before a restart starts sounding again
   const tmpDir = path.join(store.dir, 'tmp');
   fs.mkdirSync(tmpDir, { recursive: true });
 
@@ -175,6 +187,29 @@ export function createAfppServer(opts = {}) {
 
   const isAdmin = (req) => !!ADMIN && safeEq(String(req.headers.authorization || ''), `Bearer ${ADMIN}`);
 
+  /** The shared rings' stream, from the local Icecast, on the API's own origin (https, no new port). */
+  function proxyRing(req, res) {
+    if (!cast || !env.ICECAST_URL) return send(res, 503, { error: 'the shared rings are not streamed here' });
+    const up = http.get(new URL(ringMount(env), env.ICECAST_URL), (ice) => {
+      if (ice.statusCode !== 200) {
+        ice.resume();
+        return send(res, 503, { error: 'the shared rings are silent right now' });
+      }
+      res.writeHead(200, {
+        'Content-Type': ice.headers['content-type'] || 'audio/mpeg',
+        'Cache-Control': 'no-store',
+        'X-Accel-Buffering': 'no',
+      });
+      if (req.method === 'HEAD') {
+        ice.destroy();
+        return res.end();
+      }
+      ice.pipe(res);
+    });
+    up.on('error', () => send(res, 503, { error: 'Icecast does not answer' }));
+    res.on('close', () => up.destroy());
+  }
+
   function serveAudio(req, res, id, file) {
     const m = /^([A-Za-z0-9][A-Za-z0-9_.-]{0,99})\.([a-z0-9]{2,4})$/.exec(file);
     if (!ID_RE.test(id) || !m || !EXT_TYPES[m[2]]) return send(res, 404, { error: 'not found' });
@@ -277,7 +312,8 @@ export function createAfppServer(opts = {}) {
     const [, a, b, c, d2] = parts;
     const ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
     const write = req.method !== 'GET' && req.method !== 'HEAD';
-    if (write && limited('w', ip, 120, 60_000)) return send(res, 429, { error: 'slow down' });
+    // A drag in the shared rings is many small moves: they have their own, wider limit.
+    if (write && a !== 'ring' && limited('w', ip, 120, 60_000)) return send(res, 429, { error: 'slow down' });
 
     if (a === 'health' && req.method === 'GET') return send(res, 200, { ok: true, derives: store.derives.size });
 
@@ -307,6 +343,19 @@ export function createAfppServer(opts = {}) {
     }
 
     if (a === 'audio' && b && c && (req.method === 'GET' || req.method === 'HEAD')) return serveAudio(req, res, b, c);
+
+    // ------------------------------------------------------------ the shared rings
+    if (a === 'ring' && !b && req.method === 'GET') return send(res, 200, { ...ring.state(), stream: !!cast });
+    if (a === 'ring' && !b && req.method === 'POST') {
+      if (limited('ring', ip, 600, 60_000)) return send(res, 429, { error: 'slow down' });
+      try {
+        ring.apply(await readJson(req));
+      } catch (e) {
+        return send(res, e.status || 400, { error: e.message });
+      }
+      return send(res, 200, { ...ring.state(), stream: !!cast });
+    }
+    if (a === 'ring.mp3' && !b && (req.method === 'GET' || req.method === 'HEAD')) return proxyRing(req, res);
 
     if (a === 'bitacora.json' && req.method === 'GET') {
       const solo = ['chat', 'deriva'].includes(url.searchParams.get('solo')) ? url.searchParams.get('solo') : null;
@@ -346,6 +395,7 @@ export function createAfppServer(opts = {}) {
           return send(res, e.status || 400, { error: e.message });
         }
         broadcast('derive', activityOf(saved));
+        if (existing) ring.prune(); // a sound dropped from the derive leaves the shared rings too
         if (!existing) {
           const { lat, lng } = activityOf(saved);
           logEvent({ tipo: 'deriva', deriva: saved.id, alias: saved.alias, titulo: saved.title, n: saved.recordings.length, lat, lng });
@@ -358,6 +408,7 @@ export function createAfppServer(opts = {}) {
         if (!existing) return send(res, 404, { error: 'not found' });
         store.remove(b);
         broadcast('remove', { id: b });
+        ring.prune();
         return send(res, 200, { ok: true });
       }
 
@@ -378,6 +429,7 @@ export function createAfppServer(opts = {}) {
     });
   });
   server.on('close', () => {
+    cast?.stop();
     irc?.stop();
     telegram?.stop();
     clearInterval(ping);

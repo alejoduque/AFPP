@@ -24,7 +24,7 @@ import { Mixer } from './mixer.js';
 import { OneBitFilter } from './OneBit.jsx';
 import ChatPanel from './ChatPanel.jsx';
 import Ticker from './Ticker.jsx';
-import { fetchActivity, fetchDerives, fetchDerive, subscribe, audioUrl } from './api.js';
+import { fetchActivity, fetchDerives, fetchDerive, subscribe, audioUrl, fetchRing, postRing, ringStreamUrl } from './api.js';
 import { watchWalks } from './walks.mjs';
 import { toTrace, playOrder } from './tracklog.mjs';
 import { soundsLabel } from './format.js';
@@ -45,6 +45,7 @@ import LayersPanel, { loadLayers, saveLayers } from './LayersPanel.jsx';
 import { matches, cleanSelection, activeCount } from './layers.mjs';
 
 const MIX_KEY = 'afpp_rings';
+const RING_MODE_KEY = 'afpp_ring_mode';
 const SATELLITES = 12; // the latest shared sounds shown around the rings
 const TRACKLOG_KEEP = 12; // shared walks the tracklog keeps to play
 const SETTLE_MS = 2500; // a share arrives as a burst (the derive, then each sound): wait for it to settle
@@ -106,6 +107,29 @@ export default function AfppApp({ native = false }) {
   const [allSounds, setAllSounds] = useState([]); // every shared sound, newest first: {src, meta}
   const [layers, setLayersState] = useState(() => cleanSelection(loadLayers()));
   const [layersOpen, setLayersOpen] = useState(false);
+  // The rings: your own mix (solo), or the one everyone hears through Icecast (together).
+  const [together, setTogetherState] = useState(() => {
+    try {
+      return localStorage.getItem(RING_MODE_KEY) === 'together';
+    } catch {
+      return false;
+    }
+  });
+  const [sharedRing, setSharedRing] = useState(null); // {sources, streaming, stream}
+  const [tgItems, setTgItems] = useState([]); // the Telegram group's files that arrived live (SSE)
+  const setTogether = useCallback((on) => {
+    setTogetherState(on);
+    try {
+      localStorage.setItem(RING_MODE_KEY, on ? 'together' : 'solo');
+    } catch {
+      // private mode
+    }
+  }, []);
+  const onShared = useCallback((msg) => {
+    postRing(msg)
+      .then(setSharedRing)
+      .catch((e) => say(e.message));
+  }, []);
   const setLayers = useCallback((sel) => {
     const clean = cleanSelection(sel);
     setLayersState(clean);
@@ -269,6 +293,8 @@ export default function AfppApp({ native = false }) {
         setActivity((list) => list.filter((d) => d.id !== id));
         setShared((list) => list.filter((x) => x.trace.id !== id));
       },
+      onRing: (st) => setSharedRing((prev) => ({ ...st, stream: st.stream ?? prev?.stream })),
+      onTelegram: (item) => setTgItems((list) => [item, ...list.filter((x) => x.id !== item.id)]),
     });
     return () => {
       alive = false;
@@ -344,15 +370,25 @@ export default function AfppApp({ native = false }) {
   const matching = useMemo(() => allSounds.filter((x) => matches(x.meta, layers)), [allSounds, layers]);
   const satellites = useMemo(() => matching.slice(0, SATELLITES).map((x) => x.src), [matching]);
 
-  // What the rings hold: what you sent (first), then the satellites, once each.
+  // Together: what is in the shared rings now (and whether this server streams it).
+  useEffect(() => {
+    if (!AFPP_ENABLED || !together) return;
+    fetchRing().then(setSharedRing).catch(() => setSharedRing({ sources: [], streaming: false, stream: false }));
+  }, [together]);
+  const sharedSources = useMemo(
+    () => (together ? (sharedRing?.sources || []).map((x) => ({ id: x.id, name: x.name || t('afpp.sound'), alias: x.alias, lat: x.lat, lng: x.lng, url: audioUrl(x.audio) })) : []),
+    [together, sharedRing],
+  );
+
+  // What the rings hold: in the shared rings first (together), what you sent, then the satellites, once each.
   const ringSources = useMemo(() => {
     const seen = new Set();
-    return [...sources, ...satellites].filter((s) => {
+    return [...sharedSources, ...sources, ...satellites].filter((s) => {
       if (seen.has(s.id) || dismissed.has(s.id)) return false;
       seen.add(s.id);
       return true;
     }).slice(0, SATELLITES + 6);
-  }, [sources, satellites, dismissed]);
+  }, [sharedSources, sources, satellites, dismissed]);
 
   const toMix = useCallback((src) => {
     setSources((list) => (list.some((s) => s.id === src.id) ? list : [...list, src]));
@@ -640,6 +676,11 @@ export default function AfppApp({ native = false }) {
               }}
               open={ringsOpen}
               onToggle={() => setRingsOpen((o) => !o)}
+              together={together}
+              onTogether={setTogether}
+              shared={sharedRing}
+              onShared={onShared}
+              streamUrl={ringStreamUrl()}
               tools={
                 <button type="button" className={`afpp-btn ${activeCount(layers) ? 'is-lit' : ''}`} onClick={() => setLayersOpen((o) => !o)} aria-expanded={layersOpen}>
                   ◫ {t('layers.title')}
