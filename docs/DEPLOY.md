@@ -4,6 +4,15 @@ Once set up, a push to `main` on GitHub tests, builds and deploys the site and
 the API to altred.xyz (`.github/workflows/deploy.yml`). The APK and the room
 relay go up by hand, rarely.
 
+**Or, from the server itself**, without the Action and without the Mac: as root on
+altred.xyz, one command pulls `main` from GitHub, builds the site there with
+AFPP's Node 22, installs the site and the API, the admin tool and ffmpeg, reads
+Icecast's settings for the shared rings, and restarts the API:
+
+```
+server$ curl -fsSL https://raw.githubusercontent.com/alejoduque/AFPP/main/server/afpp/deploy/update-on-server.sh | bash
+```
+
 | what | where on altred.xyz | how it gets there |
 |---|---|---|
 | the site (globe, chat, bitácora, how-to, kit) | `/var/www/altred.xyz/AlpineFeministPunkParade/` | GitHub Actions, every push |
