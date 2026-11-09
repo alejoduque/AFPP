@@ -34,6 +34,8 @@ npm test                                                     # (in server/afpp) 
 | `HOST` / `PORT` | `127.0.0.1` / `8790` | |
 | `IRC_HOST` / `IRC_PORT` / `IRC_CHANNEL` | — / 6667 / `#AFPP` | The bitácora bot on the local Ergo. It asks for `message-tags`, so lines typed on the web keep their typing (TBT, `lib/tbt.js`). |
 | `TURN_HOST` / `TURN_SECRET` | — | ICE for the chat's voice and video (`/api/ice`): STUN on `TURN_HOST`, and TURN with coturn's REST credentials when `TURN_SECRET` (coturn's `static-auth-secret`) is set. Neither: calls connect only inside one network. |
+| `ICECAST_URL` / `ICECAST_SOURCE_PASSWORD` / `ICECAST_MOUNT` | — / — / `/afpp-rings.mp3` | The shared rings' stream (`lib/ring.js`): the server mixes the sounds in the shared rings with ffmpeg and sends one MP3 to this Icecast (`http://127.0.0.1:<port>` and its `<source-password>`; `update-on-server.sh` reads both from `icecast.xml`). Unset: the rings are still shared, nothing is streamed. |
+| `TELEGRAM_TOKEN` / `TELEGRAM_CHAT` | — | The group bridge, and its files on the map (`lib/tgfiles.js`): photos, videos, voice notes, sounds and documents, placed by the sender's live or shared location within 15 min, else the file's own GPS, else the bot asks. Kept in `DATA_DIR/telegram/`. |
 
 ## API
 
@@ -52,11 +54,23 @@ All under `/api/`. In production nginx strips the `/AlpineFeministPunkParade/afp
 | `GET /events` | | SSE: `derive` (published / new audio) and `remove`. |
 | `GET /ice` | | `{iceServers, ttl}` for the chat's WebRTC: STUN, plus TURN credentials valid 12 h. |
 | `GET /bitacora.json` | | `?solo=chat\|deriva&ultimos=N`. A chat line typed on the web has `tbt`: its typing, `[[delay_ms, pos, del, ins], …]`. |
+| `GET /ring` · `POST /ring` | | The shared rings: `{sources: [{id, x, y, name, alias, audio}], streaming, stream}`; post `{op: add\|move\|remove, id: "<derive>/<rec>", x, y}` (positions as in the rings, 0..1). SSE `ring`. |
+| `GET /ring.mp3` | | The shared mix, proxied from Icecast (unbuffered). 503 while silent or unconfigured. |
+| `GET /telegram?bbox=w,s,e,n` | | The Telegram group's placed files: `{id, name, kind, mime, caption, t, lat, lng, how, file}`. SSE `telegram`. Admin: `?all=1` (placed or not), `DELETE /telegram/<id>`. |
+| `GET /telegram/file/<id>.<ext>` | | The file, with `Range`. Inline for images, video, audio and PDF; anything else as a download. |
 | `GET /health` | | |
 
 Device headers: `X-Device-Id`, `X-Device-Key`. Writes are rate-limited per IP.
 
 ## Deploy
+
+Everything (site, API, admin tool, ffmpeg, the Icecast settings), from GitHub, in one command as root on the server:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/alejoduque/AFPP/main/server/afpp/deploy/update-on-server.sh | bash
+```
+
+It builds the site with AFPP's own Node 22 (`/opt/afpp-node`, installed once by `deploy/setup-on-server.sh`) and is safe to re-run.
 
 It is served under the existing altred.xyz site, so there is **no DNS and no new
 certificate**:
@@ -86,7 +100,7 @@ server/afpp/deploy/deploy.sh push       # upload + restart + health check
 The site itself goes up with every push to `main` (GitHub Actions, `docs/DEPLOY.md`);
 APK builds point at `https://altred.xyz/AlpineFeministPunkParade/afpp` by default.
 
-Moderation: `curl -X DELETE -H "Authorization: Bearer $ADMIN_TOKEN" https://altred.xyz/AlpineFeministPunkParade/afpp/api/derives/<id>`.
+Moderation: on the server, `bash /opt/afpp/tools/afpp-admin.sh` (curl + python3, no Node) lists every shared derive and its sounds and deletes what you pick (whole derives, or single sounds; `t` for the Telegram group's files); `list` and `delete <id>... --yes` for scripts. Or by hand: `curl -X DELETE -H "Authorization: Bearer $ADMIN_TOKEN" https://altred.xyz/AlpineFeministPunkParade/afpp/api/derives/<id>`.
 Backups: `DATA_DIR` is the whole state, so rsync `/var/lib/afpp`.
 
 ## The chat's assembly: room relay and TURN

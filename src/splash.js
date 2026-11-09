@@ -1,11 +1,12 @@
 /**
- * The splash (index.html): the logo stays at least SHOW_MS once it is drawn
+ * The splash (index.html): the logo and the supporters' credit stay SHOW_MS once drawn
  * (timed from when it arrives, not from the page's start, so a slow network
  * still sees it); if it has not come by MAX_WAIT_MS the splash steps away
- * anyway. A tap, a click or a key lifts it sooner. Marks the app as started,
+ * anyway. A tap, a click or a key lifts it sooner (not a tap on a credit link:
+ * that opens the link). Marks the app as started,
  * so index.html's "did not start" note never shows.
  */
-const SHOW_MS = 1400;
+const SHOW_MS = 5000;
 const MAX_WAIT_MS = 4000;
 
 function logoShown(img) {
@@ -27,8 +28,8 @@ export function dismissSplash() {
   if (!el) return;
   let timer = null;
   let gone = false;
-  const go = () => {
-    if (gone) return;
+  const go = (e) => {
+    if (gone || e?.target?.closest?.('a')) return;
     gone = true;
     clearTimeout(timer);
     el.removeEventListener('pointerdown', go);

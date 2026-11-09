@@ -26,12 +26,39 @@ export const audioUrl = (rel) => (rel ? `${AFPP_API}/api/${rel}` : null);
 
 /**
  * Live changes: onDerive(activityDot) when a derive is published or gets
- * audio, onRemove({id}) when one is unshared. Returns a close function.
+ * audio, onRemove({id}) when one is unshared, onRing(state) when someone
+ * moves a sound in the shared rings, onTelegram(item) when a file from the
+ * Telegram group lands on the map. Returns a close function.
  */
-export function subscribe({ onDerive, onRemove }) {
+export function subscribe({ onDerive, onRemove, onRing, onTelegram }) {
   if (typeof EventSource === 'undefined') return () => {};
   const es = new EventSource(`${AFPP_API}/api/events`);
   es.addEventListener('derive', (e) => onDerive?.(JSON.parse(e.data)));
   es.addEventListener('remove', (e) => onRemove?.(JSON.parse(e.data)));
+  es.addEventListener('ring', (e) => onRing?.(JSON.parse(e.data)));
+  es.addEventListener('telegram', (e) => onTelegram?.(JSON.parse(e.data)));
   return () => es.close();
 }
+
+// ------------------------------------------------------------ the shared rings
+/** {sources: [{id, x, y, name, alias, audio}], streaming, stream} */
+export const fetchRing = () => get('ring');
+
+/** {op: add|move|remove, id, x, y} → the new state. */
+export async function postRing(msg) {
+  const res = await fetch(`${AFPP_API}/api/ring`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(msg) });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `ring: HTTP ${res.status}`);
+  return data;
+}
+
+/** The shared mix, as heard from Icecast (through the API, same origin). */
+export const ringStreamUrl = () => `${AFPP_API}/api/ring.mp3`;
+
+// ------------------------------------------------------------ the Telegram group's files
+/** Placed items in [w, s, e, n]: [{id, name, kind, mime, caption, t, lat, lng, file, size}] */
+export const fetchTelegram = ([w, s, e, n]) =>
+  get(`telegram?bbox=${[w, s, e, n].map((v) => v.toFixed(5)).join(',')}`);
+
+/** Absolute URL of a Telegram file from its API-relative path. */
+export const telegramFileUrl = (rel) => (rel ? `${AFPP_API}/api/${rel}` : null);

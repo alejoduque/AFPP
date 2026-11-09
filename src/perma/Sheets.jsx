@@ -7,6 +7,8 @@ import React, { useState } from 'react';
 import afppShareService from '../services/afppShareService.js';
 import userAliasService from '../services/userAliasService.js';
 import { t } from '../i18n';
+import Checks from '../afpp/Checks.jsx';
+import { SOUNDSCAPE, CONTENT } from '../afpp/layers.mjs';
 
 export const fmtTime = (sec) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
 
@@ -60,12 +62,14 @@ export function AliasSheet({ onDone }) {
 export function SaveSheet({ take, onSave, onDiscard }) {
   const [name, setName] = useState('');
   const [notes, setNotes] = useState('');
+  const [scape, setScape] = useState([]);
+  const [content, setContent] = useState([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const save = async () => {
     setBusy(true);
     try {
-      await onSave({ name, notes });
+      await onSave({ name, notes, tags: [...scape, ...content] });
     } catch (e) {
       setError(e.message === 'nogps' ? t('perma.err.nogps') : e.message);
       setBusy(false);
@@ -80,6 +84,8 @@ export function SaveSheet({ take, onSave, onDiscard }) {
         placeholder={t('perma.take.name')}
         onChange={(e) => setName(e.target.value)}
       />
+      <Checks legend={t('layers.soundscape')} options={SOUNDSCAPE.map((v) => [v, t(`tag.${v}`)])} value={scape} onChange={setScape} />
+      <Checks legend={t('layers.content')} options={CONTENT.map((v) => [v, t(`tag.${v}`)])} value={content} onChange={setContent} />
       <textarea
         className="perma-input"
         rows={2}

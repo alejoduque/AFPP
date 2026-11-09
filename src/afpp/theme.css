@@ -793,3 +793,95 @@
 }
 .perma .afpp-brand img { height: 30px; }
 .perma .afpp-brand__sub { display: inline; font-size: 10px; }
+
+/* ───────────────────────────────────────── checkboxes (Checks.jsx) and Layers */
+
+.afpp-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.afpp-checks legend {
+  width: 100%;
+  padding: 0 0 2px;
+  color: var(--dim);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.afpp-checks label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px; /* a fingertip */
+  padding: 4px 10px;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.afpp-checks label.is-on { background: var(--ink); color: var(--ground); }
+.afpp-checks label:focus-within { outline: 1px solid var(--lit); outline-offset: 1px; }
+.afpp-checks input { accent-color: var(--lit); margin: 0; }
+
+.afpp-rings__tools { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+.afpp-layers {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  z-index: 1900;
+  width: min(100%, 520px);
+  max-height: 80vh;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0));
+  background: var(--ground);
+  border: 2px solid var(--lit);
+  border-bottom: 0;
+}
+
+.afpp-layers header { display: flex; gap: 8px; align-items: baseline; color: var(--lit); }
+.afpp-layers header .afpp-x { margin-left: auto; font-size: 18px; }
+.afpp-layers p { margin: 0; }
+
+/* Solo / Together */
+.afpp-seg { display: inline-flex; border: 1px solid var(--ink); }
+.afpp-seg button {
+  font: inherit;
+  color: var(--ink);
+  background: var(--ground);
+  border: 0;
+  padding: 4px 12px;
+  min-height: 32px;
+  cursor: pointer;
+}
+.afpp-seg button + button { border-left: 1px solid var(--ink); }
+.afpp-seg button.is-on { background: var(--ink); color: var(--ground); }
+.afpp-seg button:focus-visible { outline: 1px solid var(--lit); outline-offset: 1px; }
+.afpp-rings__note { margin: 0; font-size: 11px; text-align: center; }
+
+/* The Telegram group's files on the street map */
+.afpp-tg {
+  display: grid;
+  place-items: center;
+  font: 13px/1 var(--mono);
+  color: var(--ground);
+  background: var(--ink);
+  border: 1px solid var(--lit);
+}
+.afpp-tg:hover, .afpp-tg:focus { background: var(--lit); }
+.afpp-tgpanel img, .afpp-tgpanel video { display: block; width: 100%; max-height: min(40vh, 220px); object-fit: contain; margin: 6px 0; background: #000; }
+.afpp-tgpanel audio { width: 100%; margin: 6px 0; }
+.afpp-tgpanel a.afpp-btn { display: inline-block; text-decoration: none; }
