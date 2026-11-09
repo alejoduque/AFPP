@@ -41,6 +41,8 @@ import { t, getLanguage } from '../i18n';
 import './theme.css';
 import '../perma/perma.css';
 import LangSelect from './LangSelect.jsx';
+import LayersPanel, { loadLayers, saveLayers } from './LayersPanel.jsx';
+import { matches, cleanSelection, activeCount } from './layers.mjs';
 
 const MIX_KEY = 'afpp_rings';
 const SATELLITES = 12; // the latest shared sounds shown around the rings
@@ -101,7 +103,14 @@ export default function AfppApp({ native = false }) {
   const [ringsOpen, setRingsOpen] = useState(false);
   // On a phone the chat starts folded, so the stage and the bar have room.
   const [chatOpen, setChatOpen] = useState(wide);
-  const [satellites, setSatellites] = useState([]); // the latest shared sounds, anywhere
+  const [allSounds, setAllSounds] = useState([]); // every shared sound, newest first: {src, meta}
+  const [layers, setLayersState] = useState(() => cleanSelection(loadLayers()));
+  const [layersOpen, setLayersOpen] = useState(false);
+  const setLayers = useCallback((sel) => {
+    const clean = cleanSelection(sel);
+    setLayersState(clean);
+    saveLayers(clean);
+  }, []);
   const [dismissed, setDismissed] = useState(() => new Set());
   const [playing, setPlaying] = useState(null); // preview source
   const [offline, setOffline] = useState(false);
@@ -310,10 +319,14 @@ export default function AfppApp({ native = false }) {
       const derives = await fetchDerives([-180, -90, 180, 90]);
       const all = [];
       for (const d of derives) {
-        for (const r of d.recordings) if (r.audio) all.push({ src: toSource(d, r), t: r.timestamp || d.updatedAt || 0 });
+        for (const r of d.recordings) {
+          if (!r.audio) continue;
+          const t0 = r.timestamp || d.endTime || d.updatedAt || 0;
+          all.push({ src: toSource(d, r), meta: { tags: r.tags, timestamp: t0, lng: r.lng }, t: t0 });
+        }
       }
       all.sort((a, b) => b.t - a.t);
-      setSatellites(all.slice(0, SATELLITES).map((x) => x.src));
+      setAllSounds(all);
     } catch {
       // offline: only what was sent by hand
     }
@@ -326,6 +339,10 @@ export default function AfppApp({ native = false }) {
     return () => clearInterval(id);
   }, [loadSatellites]);
   loadSatellitesRef.current = loadSatellites;
+
+  // The satellites: the newest shared sounds that pass the Layers filter.
+  const matching = useMemo(() => allSounds.filter((x) => matches(x.meta, layers)), [allSounds, layers]);
+  const satellites = useMemo(() => matching.slice(0, SATELLITES).map((x) => x.src), [matching]);
 
   // What the rings hold: what you sent (first), then the satellites, once each.
   const ringSources = useMemo(() => {
@@ -623,7 +640,16 @@ export default function AfppApp({ native = false }) {
               }}
               open={ringsOpen}
               onToggle={() => setRingsOpen((o) => !o)}
+              tools={
+                <button type="button" className={`afpp-btn ${activeCount(layers) ? 'is-lit' : ''}`} onClick={() => setLayersOpen((o) => !o)} aria-expanded={layersOpen}>
+                  ◫ {t('layers.title')}
+                  {activeCount(layers) ? ` · ${activeCount(layers)}` : ''}
+                </button>
+              }
             />
+          )}
+          {layersOpen && (
+            <LayersPanel value={layers} onChange={setLayers} onClose={() => setLayersOpen(false)} matching={matching.length} />
           )}
         </div>
 

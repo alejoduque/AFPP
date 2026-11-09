@@ -36,7 +36,7 @@ function describePan(pan) {
   return t(pan < 0 ? 'afpp.rings.left' : 'afpp.rings.right', { n: pct });
 }
 
-export default function RingMixer({ mixer, sources, onRemove, open, onToggle }) {
+export default function RingMixer({ mixer, sources, onRemove, open, onToggle, tools = null }) {
   const stageRef = useRef(null);
   const canvasRef = useRef(null);
   const dots = useRef(new Map()); // id → {x, y, slot, el, parked, dragging}
@@ -189,6 +189,7 @@ export default function RingMixer({ mixer, sources, onRemove, open, onToggle }) 
       </button>
       {open && (
         <div className="afpp-rings__body">
+          {tools && <div className="afpp-rings__tools">{tools}</div>}
           <div className="afpp-stage" ref={stageRef}>
             <canvas ref={canvasRef} className="afpp-stage__sonar" />
             <div className="afpp-stage__dots">

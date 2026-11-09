@@ -136,7 +136,7 @@ export default function useField({ autoGps = true } = {}) {
   }, []);
 
   /** Keep the take: into storage and into the active derive. */
-  const saveTake = useCallback(async ({ name = '', notes = '' } = {}) => {
+  const saveTake = useCallback(async ({ name = '', notes = '', tags = [] } = {}) => {
     if (!take) return null;
     const location = take.location || gpsRef.current;
     if (!location) throw new Error('nogps');
@@ -148,7 +148,7 @@ export default function useField({ autoGps = true } = {}) {
       filename: `${id}.${ext}`,
       displayName: name.trim(),
       notes: notes.trim(),
-      speciesTags: [],
+      speciesTags: tags.slice(0, 10), // the take sheet's checkboxes (layers.mjs keys)
       timestamp: new Date().toISOString(),
       duration: Math.max(1, Math.round(take.durationSec)),
       fileSize: take.blob.size,
