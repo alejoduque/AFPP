@@ -17,7 +17,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { fetchDerives, audioUrl } from './api.js';
+import { fetchDerives, audioUrl, fetchTelegram, telegramFileUrl } from './api.js';
 import { AFPP_ENABLED } from '../config/afpp.js';
 import { INK, LIT } from './palette.js';
 import { addLineArtTiles } from './OneBit.jsx';
@@ -33,6 +33,9 @@ export function zoomForKm(lat, widthPx, km = 10) {
   const metersPerPx = (km * 1000) / Math.max(200, widthPx);
   return Math.log2((156543.03392 * Math.cos((lat * Math.PI) / 180)) / metersPerPx);
 }
+
+/** 1-bit marks for the Telegram group's files on the map. */
+const TG_MARK = { photo: '▣', video: '▶', sound: '♪', file: '▤' };
 
 const fmtDur = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
 
@@ -50,6 +53,7 @@ export function toSource(derive, rec) {
 export default function WalkMap({
   center, zoom, follow: followAtStart = false, gps, trace = [], version = 0, live = new Map(),
   playingId, mixIds = [], onPlay, onToMix, onPlanet, onLocate, focusSession,
+  telegramOn = true, telegramLive = [],
 }) {
   const elRef = useRef(null);
   const mapRef = useRef(null);
@@ -58,6 +62,10 @@ export default function WalkMap({
   const follow = useRef(followAtStart);
   const [following, setFollowing] = useState(followAtStart);
   const [selected, setSelected] = useState(null);
+  const [tgPick, setTgPick] = useState(null); // a Telegram file, open in the panel
+  const tgItems = useRef(new Map()); // id → item (the group's files in view)
+  const tgOnRef = useRef(telegramOn);
+  tgOnRef.current = telegramOn;
   const [, setTick] = useState(0);
   const [error, setError] = useState(null);
   const cb = useRef({});
@@ -79,10 +87,14 @@ export default function WalkMap({
     layers.current = {
       mine: L.layerGroup().addTo(map),
       walking: L.layerGroup().addTo(map),
+      telegram: L.layerGroup().addTo(map),
       live: L.polyline([], { color: LIT, weight: 3, lineCap: 'square', lineJoin: 'miter' }).addTo(map),
       me: null,
     };
-    map.on('click', () => setSelected(null));
+    map.on('click', () => {
+      setSelected(null);
+      setTgPick(null);
+    });
     map.on('dragstart', () => {
       follow.current = false;
       setFollowing(false);
@@ -106,10 +118,17 @@ export default function WalkMap({
       timer = setTimeout(async () => {
         const b = map.getBounds().pad(0.5);
         try {
-          const list = await fetchDerives([b.getWest(), b.getSouth(), b.getEast(), b.getNorth()]);
+          const box = [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()];
+          const list = await fetchDerives(box);
           if (!alive) return;
           drawShared(list);
           setError(null);
+          if (tgOnRef.current) {
+            const items = await fetchTelegram(box).catch(() => []);
+            if (!alive) return;
+            for (const it of items) tgItems.current.set(it.id, it);
+            drawTelegram();
+          }
         } catch (e) {
           if (alive) setError(e.message);
         }
@@ -167,6 +186,48 @@ export default function WalkMap({
     }
     setTick((n) => n + 1);
   }
+
+  // ------------------------------------------------------------ the Telegram group's files
+  // Each sender's files, in time order, are their breadcrumbs: a dotted line
+  // from one place they shared something to the next.
+  function drawTelegram() {
+    const g = layers.current.telegram;
+    if (!g) return;
+    g.clearLayers();
+    if (!tgOnRef.current) return;
+    const bySender = new Map();
+    for (const it of tgItems.current.values()) {
+      if (it.lat == null) continue;
+      if (!bySender.has(it.name)) bySender.set(it.name, []);
+      bySender.get(it.name).push(it);
+    }
+    for (const list of bySender.values()) {
+      list.sort((a, b) => a.t - b.t);
+      if (list.length > 1) {
+        L.polyline(list.map((it) => [it.lat, it.lng]), { color: INK, weight: 1, dashArray: '1 6', lineCap: 'square', interactive: false }).addTo(g);
+      }
+      for (const it of list) {
+        const m = L.marker([it.lat, it.lng], {
+          icon: L.divIcon({ className: `afpp-tg afpp-tg--${it.kind}`, iconSize: [18, 18], html: TG_MARK[it.kind] || TG_MARK.file }),
+          title: `✈ ${it.name} · ${t(`tg.kind.${it.kind}`)}`,
+          keyboard: true,
+        }).addTo(g);
+        m.on('click', (e) => {
+          L.DomEvent.stopPropagation(e);
+          setSelected(null);
+          setTgPick(it);
+        });
+      }
+    }
+  }
+
+  useEffect(() => {
+    for (const it of telegramLive) tgItems.current.set(it.id, it);
+    drawTelegram();
+    if (!telegramOn) setTgPick(null);
+    // a layer just switched on: fetch what is in view
+    if (telegramOn && mapRef.current && !telegramLive.length) mapRef.current.fire('moveend');
+  }, [telegramOn, telegramLive]);
 
   // light up what is selected, playing, or in the rings
   useEffect(() => {
@@ -280,6 +341,30 @@ export default function WalkMap({
         ⌖
       </button>
       {error && <p className="afpp-local__error afpp-warn">{t('afpp.map.offline')}</p>}
+      {tgPick && !d && (
+        <aside className="afpp-panel afpp-tgpanel" aria-live="polite">
+          <header>
+            <b>✈ {tgPick.name}</b> <span>· {t(`tg.kind.${tgPick.kind}`)}</span>
+            <button type="button" className="afpp-x" onClick={() => setTgPick(null)} aria-label={t('common.close')}>
+              ×
+            </button>
+          </header>
+          <p className="afpp-dim">
+            {ago(tgPick.t)} · {t(`tg.how.${tgPick.how || 'location'}`)}
+          </p>
+          {tgPick.caption && <p>{tgPick.caption}</p>}
+          {tgPick.file && tgPick.kind === 'photo' && <img src={telegramFileUrl(tgPick.file)} alt={tgPick.caption || t('tg.kind.photo')} loading="lazy" />}
+          {tgPick.file && tgPick.kind === 'video' && <video src={telegramFileUrl(tgPick.file)} controls playsInline preload="metadata" />}
+          {tgPick.file && tgPick.kind === 'sound' && <audio src={telegramFileUrl(tgPick.file)} controls preload="metadata" />}
+          {tgPick.file ? (
+            <a className="afpp-btn" href={telegramFileUrl(tgPick.file)} target="_blank" rel="noopener" download={tgPick.kind === 'file' ? tgPick.filename || true : undefined}>
+              {t(tgPick.kind === 'file' ? 'tg.download' : 'tg.open')} {tgPick.filename ? `· ${tgPick.filename}` : ''}
+            </a>
+          ) : (
+            <p className="afpp-dim">{t('tg.tooBig')}</p>
+          )}
+        </aside>
+      )}
       {d && (
         <aside className="afpp-panel" aria-live="polite">
           <header>

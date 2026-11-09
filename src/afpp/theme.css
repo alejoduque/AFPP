@@ -871,3 +871,17 @@
 .afpp-seg button.is-on { background: var(--ink); color: var(--ground); }
 .afpp-seg button:focus-visible { outline: 1px solid var(--lit); outline-offset: 1px; }
 .afpp-rings__note { margin: 0; font-size: 11px; text-align: center; }
+
+/* The Telegram group's files on the street map */
+.afpp-tg {
+  display: grid;
+  place-items: center;
+  font: 13px/1 var(--mono);
+  color: var(--ground);
+  background: var(--ink);
+  border: 1px solid var(--lit);
+}
+.afpp-tg:hover, .afpp-tg:focus { background: var(--lit); }
+.afpp-tgpanel img, .afpp-tgpanel video { display: block; width: 100%; max-height: min(40vh, 220px); object-fit: contain; margin: 6px 0; background: #000; }
+.afpp-tgpanel audio { width: 100%; margin: 6px 0; }
+.afpp-tgpanel a.afpp-btn { display: inline-block; text-decoration: none; }

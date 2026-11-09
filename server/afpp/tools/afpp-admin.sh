@@ -36,9 +36,9 @@ cmd, args = sys.argv[1], sys.argv[2:]
 def load(f):
     with open(f) as fh:
         return json.load(fh)
-def cut(s, n):
+def cut(s, n):  # always ends in a space, so columns never run together
     s = str(s if s is not None else '')
-    return s[:n - 1] + '…' if len(s) > n else s.ljust(n)
+    return s[:n - 2] + '… ' if len(s) > n - 1 else s.ljust(n)
 def day(t):
     return time.strftime('%Y-%m-%d %H:%M', time.gmtime(t / 1000)) if t else '?'
 def dur(s):
@@ -93,6 +93,18 @@ elif cmd == 'picked':       # file n... -> "rec_id ext name" for those sound num
     for n in args[1:]:
         r = d['recordings'][int(n) - 1]
         print(r['id'], r.get('ext') or '-', r.get('name') or '-')
+elif cmd == 'tgtable':      # items JSON on stdin, orderfile -> numbered table of Telegram files
+    items = json.load(sys.stdin)
+    with open(args[0], 'w') as fh:
+        fh.write(''.join(it['id'] + '\n' for it in items))
+    if not items:
+        print('  (no Telegram files)')
+    else:
+        print('  ' + cut('#', 4) + cut('date (UTC)', 17) + cut('from', 16) + cut('kind', 6) + cut('on the map', 19) + cut('caption / file', 26) + 'id')
+    for i, it in enumerate(items):
+        where = '%.3f,%.3f' % (it['lat'], it['lng']) if it.get('lat') is not None else 'not placed'
+        print('  ' + cut(i + 1, 4) + cut(day(it.get('t')), 17) + cut(it.get('name'), 16) + cut(it.get('kind'), 6) + cut(where, 19)
+              + cut(it.get('caption') or it.get('filename') or '-', 26) + it['id'])
 elif cmd == 'without':      # file rec_id... -> the derive to PUT, without those sounds
     d = load(args[0])
     drop = set(args[1:])
@@ -108,7 +120,7 @@ call() {
   local method=$1 path=$2 body=${3:-} try
   for try in 1 2 3 4 5 6; do
     local opts=(-s -o "$TMP/resp" -w '%{http_code}' -X "$method")
-    [ "$method" != GET ] && opts+=(-H "Authorization: Bearer $TOKEN")
+    [ -n "$TOKEN" ] && opts+=(-H "Authorization: Bearer $TOKEN")
     [ -n "$body" ] && opts+=(-H 'Content-Type: application/json' --data-binary "@$body")
     STATUS=$(curl "${opts[@]}" "$API/$path") || STATUS=000
     [ "$STATUS" = 429 ] && [ "$try" -lt 6 ] && { sleep 2; continue; }
@@ -174,8 +186,13 @@ yes_no() { ask "$1 [y/N] "; [[ $REPLY =~ ^[yY]([eE][sS])?$ ]]; }
 HELP='
   d 1,3,5-7   delete those whole derives (trace + all sounds)
   s 4         open derive 4'"'"'s sounds, to delete single sounds
+  t           the Telegram group'"'"'s files (on the map, or waiting for a place)
   f text      show only derives whose alias, title or id contains text (f alone: all)
   r           reload        ?  this help        q  quit
+'
+TG_HELP='
+  d 1,3       delete those files (and their place on the map)
+  b           back to the derives
 '
 SOUND_HELP='
   d 2,3       delete those sounds from this derive
@@ -218,6 +235,31 @@ sounds_menu() {
   done
 }
 
+telegram_menu() {
+  local n i id
+  while :; do
+    rm -f "$TMP/resp"
+    if ! call GET 'telegram?all=1'; then echo "  could not list the Telegram files: $(why)"; return; fi
+    py tgtable "$TMP/tgorder" < "$TMP/resp"
+    printf '%s\n' "$TG_HELP"
+    ask 'telegram> '
+    case "$REPLY" in
+      ''|r) continue ;;
+      b|q) return ;;
+      d\ *)
+        n=$(wc -l < "$TMP/tgorder")
+        if ! parse_picks "${REPLY#d }" "$n"; then echo "  pick numbers from 1 to $n, e.g. d 1,3"; continue; fi
+        for i in "${PICKS[@]}"; do echo "  - $(sed -n "${i}p" "$TMP/tgorder")"; done
+        yes_no "delete ${#PICKS[@]} Telegram file(s)?" || { echo "  nothing deleted"; continue; }
+        for i in "${PICKS[@]}"; do
+          id=$(sed -n "${i}p" "$TMP/tgorder")
+          if call DELETE "telegram/$id"; then echo "  deleted $id"; else echo "  FAILED $id: $(why)"; fi
+        done ;;
+      *) printf '%s\n' "$TG_HELP" ;;
+    esac
+  done
+}
+
 interactive() {
   FILTER=''
   load_all || exit 1
@@ -232,6 +274,7 @@ interactive() {
       '') ;;
       q|quit|exit) break ;;
       '?'|h|help) printf '%s\n' "$HELP" ;;
+      t) telegram_menu; show ;;
       r|l) load_all && { echo; echo "$COUNT shared derives${FILTER:+ (filter: $FILTER)}"; show; } ;;
       f) FILTER=$(printf '%s' "$arg" | tr '[:upper:]' '[:lower:]'); show ;;
       d)

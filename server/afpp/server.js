@@ -25,6 +25,7 @@ import { Bitacora } from './lib/bitacora.js';
 import { startIrcLogger } from './lib/irc.js';
 import { startTelegram, toTelegram } from './lib/telegram.js';
 import { Ring, RingCast, icecastTarget, ringMount } from './lib/ring.js';
+import { TgFiles, INLINE_TYPES, ASK_TEXT } from './lib/tgfiles.js';
 
 const MAX_JSON = 2 * 1024 * 1024;
 
@@ -54,7 +55,8 @@ export function createAfppServer(opts = {}) {
     broadcast('ring', st);
     cast?.update();
   }
-  cast?.update(); // a ring kept from before a restart starts sounding again
+  // a ring kept from before a restart starts sounding again, once the server is set up
+  if (cast) setImmediate(() => cast.update());
   const tmpDir = path.join(store.dir, 'tmp');
   fs.mkdirSync(tmpDir, { recursive: true });
 
@@ -106,15 +108,34 @@ export function createAfppServer(opts = {}) {
       })
     : null;
 
-  // Telegram group ↔ #AFPP (TELEGRAM_TOKEN + TELEGRAM_CHAT in /etc/afpp/afpp.env).
-  if (irc && env.TELEGRAM_TOKEN && env.TELEGRAM_CHAT) {
+  // Telegram group ↔ #AFPP (TELEGRAM_TOKEN + TELEGRAM_CHAT in /etc/afpp/afpp.env), and the
+  // group's files on the map, where their senders were (lib/tgfiles.js).
+  const tgFiles = env.TELEGRAM_TOKEN && env.TELEGRAM_CHAT
+    ? new TgFiles({ dir: path.join(store.dir, 'telegram'), secret: env.TELEGRAM_TOKEN, onItem: (it) => broadcast('telegram', it) })
+    : null;
+  if (tgFiles) {
     telegram = startTelegram({
       token: env.TELEGRAM_TOKEN,
       chatId: env.TELEGRAM_CHAT,
       api: env.TELEGRAM_API || undefined,
       onMessage: ({ name, text, lines }) => {
+        if (!irc) return;
         lines.forEach((l) => irc.say(l));
         logEvent({ tipo: 'chat', nick: name, texto: text, fuente: 'telegram' });
+      },
+      onUpdate: (u) => {
+        const m = u.message || u.edited_message;
+        if (!m || String(m.chat?.id) !== String(env.TELEGRAM_CHAT) || m.from?.is_bot) return;
+        if (m.location) return tgFiles.location(m, { edited: !!u.edited_message });
+        if (!u.message) return;
+        tgFiles
+          .media(m, telegram.call, telegram.fileBase)
+          .then((r) => {
+            if (!r?.ask) return;
+            const who = m.from?.username ? `@${r.item.name}` : r.item.name;
+            telegram.reply(ASK_TEXT.replace('{name}', who), m.message_id);
+          })
+          .catch((e) => console.error('telegram file:', e.message));
       },
     });
   }
@@ -213,7 +234,14 @@ export function createAfppServer(opts = {}) {
   function serveAudio(req, res, id, file) {
     const m = /^([A-Za-z0-9][A-Za-z0-9_.-]{0,99})\.([a-z0-9]{2,4})$/.exec(file);
     if (!ID_RE.test(id) || !m || !EXT_TYPES[m[2]]) return send(res, 404, { error: 'not found' });
-    const full = store.audioPath(id, m[1], m[2]);
+    return serveFile(req, res, store.audioPath(id, m[1], m[2]), EXT_TYPES[m[2]]);
+  }
+
+  /**
+   * A file with Range support (seeking; iOS needs it). `type` null: sent as a
+   * download, never rendered (a Telegram document could be anything).
+   */
+  function serveFile(req, res, full, type) {
     let stat;
     try {
       stat = fs.statSync(full);
@@ -221,9 +249,11 @@ export function createAfppServer(opts = {}) {
       return send(res, 404, { error: 'not found' });
     }
     const headers = {
-      'Content-Type': EXT_TYPES[m[2]],
+      'Content-Type': type || 'application/octet-stream',
       'Accept-Ranges': 'bytes',
       'Cache-Control': 'public, max-age=86400',
+      'X-Content-Type-Options': 'nosniff',
+      ...(type ? {} : { 'Content-Disposition': `attachment; filename="${path.basename(full)}"` }),
     };
     const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || '');
     if (range) {
@@ -343,6 +373,32 @@ export function createAfppServer(opts = {}) {
     }
 
     if (a === 'audio' && b && c && (req.method === 'GET' || req.method === 'HEAD')) return serveAudio(req, res, b, c);
+
+    // ------------------------------------------------------------ the Telegram group's files
+    if (a === 'telegram') {
+      if (!tgFiles) return send(res, b ? 404 : 200, b ? { error: 'not found' } : []);
+      if (!b && req.method === 'GET') {
+        if (url.searchParams.get('all') === '1') {
+          if (!isAdmin(req)) return send(res, 401, { error: 'admin only' });
+          return send(res, 200, tgFiles.all());
+        }
+        const raw = url.searchParams.get('bbox');
+        const bbox = raw ? raw.split(',').map(Number) : null;
+        if (bbox && (bbox.length !== 4 || bbox.some((v) => !Number.isFinite(v)))) return send(res, 400, { error: 'bbox=w,s,e,n' });
+        return send(res, 200, tgFiles.list(bbox));
+      }
+      if (b === 'file' && c && (req.method === 'GET' || req.method === 'HEAD')) {
+        const m = /^(tg[0-9]{1,20}_[0-9]{1,12})\.([a-z0-9]{1,5})$/.exec(c);
+        const file = m && tgFiles.filePath(m[1], m[2]);
+        if (!file) return send(res, 404, { error: 'not found' });
+        return serveFile(req, res, file, INLINE_TYPES[m[2]] || null);
+      }
+      if (b && !c && req.method === 'DELETE') {
+        if (!isAdmin(req)) return send(res, 401, { error: 'admin only' });
+        return tgFiles.remove(b) ? send(res, 200, { ok: true }) : send(res, 404, { error: 'not found' });
+      }
+      return send(res, 404, { error: 'not found' });
+    }
 
     // ------------------------------------------------------------ the shared rings
     if (a === 'ring' && !b && req.method === 'GET') return send(res, 200, { ...ring.state(), stream: !!cast });

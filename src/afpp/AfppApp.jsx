@@ -598,6 +598,8 @@ export default function AfppApp({ native = false }) {
                 onPlanet={byHand((from) => goPlanet(from))}
                 onLocate={() => withGps('locate')}
                 focusSession={focusSession}
+                telegramOn={layers.telegram}
+                telegramLive={tgItems}
               />
             )}
 

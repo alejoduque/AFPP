@@ -86,7 +86,7 @@ export function toTelegram({ nick, texto }) {
  * Returns {send(text), stop()}; send is paced (Telegram allows ~20 messages a
  * minute in a group) and never throws.
  */
-export function startTelegram({ token, chatId, onMessage, api = 'https://api.telegram.org', log = console }) {
+export function startTelegram({ token, chatId, onMessage, onUpdate, api = 'https://api.telegram.org', log = console }) {
   const base = `${api}/bot${token}`;
   let offset = 0;
   let stopped = false;
@@ -111,12 +111,18 @@ export function startTelegram({ token, chatId, onMessage, api = 'https://api.tel
     while (!stopped) {
       controller = new AbortController();
       try {
-        const updates = await call('getUpdates', { offset, timeout: 50, allowed_updates: ['message'] }, controller.signal);
+        // edited_message: live locations arrive as edits of the first location message
+        const updates = await call('getUpdates', { offset, timeout: 50, allowed_updates: ['message', 'edited_message'] }, controller.signal);
         wait = 1000;
         for (const u of updates) {
           offset = u.update_id + 1;
-          const m = fromTelegram(u.message, chatId, token);
-          if (m) onMessage(m);
+          const m = u.message && fromTelegram(u.message, chatId, token);
+          if (m) onMessage?.(m);
+          try {
+            onUpdate?.(u);
+          } catch (e) {
+            log.error('telegram update:', e.message);
+          }
         }
       } catch (e) {
         if (stopped) return;
@@ -147,6 +153,16 @@ export function startTelegram({ token, chatId, onMessage, api = 'https://api.tel
 
   poll();
   return {
+    /** The Bot API, for getFile and the like. */
+    call: (method, body) => call(method, body),
+    /** Where getFile's file_path is downloaded from. */
+    fileBase: `${api}/file/bot${token}`,
+    /** A short answer to one message in the group (not paced: rare, and it answers someone). */
+    reply(text, messageId) {
+      if (stopped) return;
+      call('sendMessage', { chat_id: chatId, text, reply_to_message_id: messageId, allow_sending_without_reply: true, disable_web_page_preview: true })
+        .catch((e) => log.error('telegram reply:', e.message));
+    },
     send(text) {
       if (!text || stopped) return;
       queue.push(text);

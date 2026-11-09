@@ -196,3 +196,21 @@ test('API: /ring is shared through POST and SSE; no stream without Icecast', asy
     server.close();
   }
 });
+
+test('a server restarted with sounds in the shared rings starts, and streams again', { skip: !HAS_FFMPEG && 'no ffmpeg' }, async () => {
+  const data = path.join(dir, 'restart');
+  const s = new Store(data);
+  seed(s, dir);
+  fs.writeFileSync(path.join(data, 'ring.json'), JSON.stringify({ sources: [{ id: 'walk1/a', x: 0.5, y: 0.5 }] }));
+  const out = path.join(dir, 'restart.mp3');
+  const server = createAfppServer({ SERVER_SECRET: 'x'.repeat(32), DATA_DIR: data, RING_OUT: out });
+  await new Promise((r) => server.listen(0, '127.0.0.1', r));
+  try {
+    await new Promise((r) => setTimeout(r, 600));
+    const st = await (await fetch(`http://127.0.0.1:${server.address().port}/api/ring`)).json();
+    assert.deepEqual([st.sources.map((x) => x.id), st.streaming, st.stream], [['walk1/a'], true, true]);
+  } finally {
+    server.closeAllConnections();
+    server.close();
+  }
+});
