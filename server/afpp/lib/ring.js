@@ -235,16 +235,26 @@ class Decoder {
 /**
  * The mixer: a 20 ms clock (kept to wall time, so the stream neither drifts
  * nor bunches) sums the voices and feeds one ffmpeg encoder that sends MP3 to
- * Icecast (or to a file, RING_OUT, for tests). It runs while the ring holds a
- * sound inside, and IDLE_MS of silence after, so a listener is not cut off
- * between two people's moves.
+ * Icecast (or to a file, RING_OUT, for tests).
+ *
+ * It runs only while someone listens: the API counts the open /api/ring.mp3
+ * streams (listen()), and a browser asking for the stream (want()) starts it
+ * when the ring holds a sound. GRACE after the last listener leaves (a reload,
+ * a phone losing signal) it stops, and IDLE after the ring empties. Stopping
+ * frees ffmpeg and the Icecast source; the arrangement stays for whoever comes
+ * next.
  */
 export class RingCast {
-  constructor({ ring, target, ffmpeg = 'ffmpeg', idleMs = 120_000, log = console, onStreaming = () => {} }) {
+  constructor({ ring, target, ffmpeg = 'ffmpeg', idleMs = 120_000, graceMs = 30_000, wantMs = 15_000, log = console, onStreaming = () => {} }) {
     this.ring = ring;
     this.target = target; // icecast://source:pw@host:port/mount, or a file path
     this.ffmpeg = ffmpeg;
     this.idleMs = idleMs;
+    this.graceMs = graceMs; // how long it keeps going with nobody listening
+    this.wantMs = wantMs; // a request this recent counts as someone waiting
+    this.listeners = 0;
+    this.lastHeardAt = 0;
+    this.wantedAt = 0;
     this.log = log;
     this.onStreaming = onStreaming;
     this.decoders = new Map(); // id → Decoder
@@ -255,11 +265,35 @@ export class RingCast {
     this.retryAt = 0;
   }
 
-  /** Call when the ring changes. */
+  /** Someone is (or was just) asking to hear it. */
+  #wanted() {
+    return this.listeners > 0 || Date.now() - this.wantedAt < this.wantMs;
+  }
+
+  /** A browser asks for the stream: start it if there is something to hear. True if there is. */
+  want() {
+    this.wantedAt = Date.now();
+    this.update();
+    return this.ring.voices().length > 0;
+  }
+
+  /** One more listener; call the returned function when they leave. */
+  listen() {
+    this.listeners++;
+    let gone = false;
+    return () => {
+      if (gone) return;
+      gone = true;
+      this.listeners--;
+      if (this.listeners === 0) this.lastHeardAt = Date.now();
+    };
+  }
+
+  /** Call when the ring changes (and once at start: nobody listens yet, so nothing starts). */
   update() {
     const voices = this.ring.voices();
     if (voices.length) this.silentSince = null;
-    if (voices.length && !this.timer && Date.now() >= this.retryAt) this.#start();
+    if (voices.length && !this.timer && this.#wanted() && Date.now() >= this.retryAt) this.#start();
     // decoders for new voices; drop the ones that left
     const ids = new Set(voices.map((v) => v.id));
     for (const [id, dec] of this.decoders) {
@@ -289,6 +323,7 @@ export class RingCast {
       this.retryAt = Date.now() + 10_000; // e.g. Icecast restarting: try again on the next change after 10 s
     });
     this.enc = enc;
+    this.lastHeardAt = Date.now(); // the one who asked has GRACE to connect
     this.t0 = process.hrtime.bigint();
     this.sent = 0;
     this.timer = setInterval(() => this.#tick(), CHUNK_MS);
@@ -302,6 +337,7 @@ export class RingCast {
     let n = due - this.sent;
     if (n <= 0) return;
     if (n > RATE) n = RATE; // after a stall, do not burst more than a second
+    if (this.listeners === 0 && Date.now() - this.lastHeardAt > this.graceMs) return this.#stop(); // nobody listens
     const voices = this.ring.voices();
     if (!voices.length) {
       this.silentSince ??= Date.now();

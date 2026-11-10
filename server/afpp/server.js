@@ -208,27 +208,50 @@ export function createAfppServer(opts = {}) {
 
   const isAdmin = (req) => !!ADMIN && safeEq(String(req.headers.authorization || ''), `Bearer ${ADMIN}`);
 
-  /** The shared rings' stream, from the local Icecast, on the API's own origin (https, no new port). */
+  /**
+   * The shared rings' stream, from the local Icecast, on the API's own origin
+   * (https, no new port). A GET is a listener: it starts the mix if the ring
+   * holds a sound (waiting up to MOUNT_WAIT_MS for Icecast to put the mount
+   * up), and is counted until it closes, so the mix stops when nobody is left.
+   * A HEAD only reports.
+   */
+  const MOUNT_WAIT_MS = 6000;
   function proxyRing(req, res) {
     if (!cast || !env.ICECAST_URL) return send(res, 503, { error: 'the shared rings are not streamed here' });
-    const up = http.get(new URL(ringMount(env), env.ICECAST_URL), (ice) => {
-      if (ice.statusCode !== 200) {
-        ice.resume();
-        return send(res, 503, { error: 'the shared rings are silent right now' });
-      }
-      res.writeHead(200, {
-        'Content-Type': ice.headers['content-type'] || 'audio/mpeg',
-        'Cache-Control': 'no-store',
-        'X-Accel-Buffering': 'no',
-      });
-      if (req.method === 'HEAD') {
-        ice.destroy();
-        return res.end();
-      }
-      ice.pipe(res);
+    const head = req.method === 'HEAD';
+    const silent = () => !closed && send(res, 503, { error: 'the shared rings are silent right now' });
+    let closed = false;
+    let up = null;
+    res.on('close', () => {
+      closed = true;
+      up?.destroy();
     });
-    up.on('error', () => send(res, 503, { error: 'Icecast does not answer' }));
-    res.on('close', () => up.destroy());
+    if (!head && !cast.want()) return silent();
+    const deadline = Date.now() + MOUNT_WAIT_MS;
+    const again = () => (!head && Date.now() < deadline ? setTimeout(attempt, 300) : silent());
+    function attempt() {
+      if (closed) return;
+      up = http.get(new URL(ringMount(env), env.ICECAST_URL), (ice) => {
+        if (ice.statusCode !== 200) {
+          ice.resume();
+          return again(); // the mount is not up yet (the mix just started)
+        }
+        if (closed) return ice.destroy();
+        res.writeHead(200, {
+          'Content-Type': ice.headers['content-type'] || 'audio/mpeg',
+          'Cache-Control': 'no-store',
+          'X-Accel-Buffering': 'no',
+        });
+        if (head) {
+          ice.destroy();
+          return res.end();
+        }
+        res.on('close', cast.listen());
+        ice.pipe(res);
+      });
+      up.on('error', () => (closed ? undefined : again()));
+    }
+    attempt();
   }
 
   function serveAudio(req, res, id, file) {
