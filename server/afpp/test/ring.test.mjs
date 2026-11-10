@@ -125,6 +125,7 @@ test('RingCast: two sounds in the ring become one MP3 stream', { skip: !HAS_FFMP
   const ring = new Ring({ store, file: path.join(dir, 'ring4.json') });
   const cast = new RingCast({ ring, target: out, idleMs: 300 });
   ring.onChange = () => cast.update();
+  const release = cast.listen(); // someone listening
   ring.apply({ op: 'add', id: 'walk1/a', x: 0.3, y: 0.5 }); // left
   ring.apply({ op: 'add', id: 'walk1/b', x: 0.7, y: 0.5 }); // right
   assert.equal(ring.streaming, true);
@@ -134,6 +135,7 @@ test('RingCast: two sounds in the ring become one MP3 stream', { skip: !HAS_FFMP
   ring.apply({ op: 'clear' });
   await new Promise((r) => setTimeout(r, 1500)); // idle → stops by itself
   assert.equal(ring.streaming, false);
+  release();
   await new Promise((r) => setTimeout(r, 500));
   const probe = spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration:stream=codec_name,channels,sample_rate', '-of', 'json', out], { encoding: 'utf8' });
   const info = JSON.parse(probe.stdout);
@@ -197,7 +199,7 @@ test('API: /ring is shared through POST and SSE; no stream without Icecast', asy
   }
 });
 
-test('a server restarted with sounds in the shared rings starts, and streams again', { skip: !HAS_FFMPEG && 'no ffmpeg' }, async () => {
+test('a server restarted with sounds in the shared rings starts, keeps them, streams nothing yet', { skip: !HAS_FFMPEG && 'no ffmpeg' }, async () => {
   const data = path.join(dir, 'restart');
   const s = new Store(data);
   seed(s, dir);
@@ -208,9 +210,46 @@ test('a server restarted with sounds in the shared rings starts, and streams aga
   try {
     await new Promise((r) => setTimeout(r, 600));
     const st = await (await fetch(`http://127.0.0.1:${server.address().port}/api/ring`)).json();
-    assert.deepEqual([st.sources.map((x) => x.id), st.streaming, st.stream], [['walk1/a'], true, true]);
+    // the arrangement is kept, but nothing streams until someone listens
+    assert.deepEqual([st.sources.map((x) => x.id), st.streaming, st.stream], [['walk1/a'], false, true]);
   } finally {
     server.closeAllConnections();
     server.close();
+  }
+});
+
+test('RingCast streams only while someone listens; the arrangement stays', { skip: !HAS_FFMPEG && 'no ffmpeg' }, async () => {
+  const ring = new Ring({ store, file: path.join(dir, 'ring5.json') });
+  const cast = new RingCast({ ring, target: path.join(dir, 'listen.mp3'), graceMs: 400, wantMs: 300 });
+  ring.onChange = () => cast.update();
+  const later = (ms) => new Promise((r) => setTimeout(r, ms));
+  try {
+    ring.apply({ op: 'add', id: 'walk1/a', x: 0.5, y: 0.5 });
+    assert.equal(ring.streaming, false, 'a sound inside, nobody listening: silent');
+    assert.equal(cast.want(), true);
+    assert.equal(ring.streaming, true, 'someone asks: it starts');
+    const release = cast.listen();
+    await later(700);
+    assert.equal(ring.streaming, true, 'kept going while they listen (past the grace)');
+    release();
+    release(); // twice is harmless
+    assert.equal(cast.listeners, 0);
+    await later(700);
+    assert.equal(ring.streaming, false, 'stopped after the grace with nobody left');
+    assert.deepEqual(ring.state().sources.map((x) => x.id), ['walk1/a'], 'the arrangement stays');
+
+    // somebody waiting on an empty ring hears the first sound at once
+    ring.apply({ op: 'clear' });
+    assert.equal(cast.want(), false, 'empty ring: nothing to hear');
+    assert.equal(ring.streaming, false);
+    ring.apply({ op: 'add', id: 'walk1/b', x: 0.5, y: 0.5 });
+    assert.equal(ring.streaming, true, 'a sound dropped in while someone waits starts it');
+    await later(800);
+    assert.equal(ring.streaming, false, 'and they never connected: stops after the grace');
+    await later(400); // the asking moment has passed
+    ring.apply({ op: 'move', id: 'walk1/b', x: 0.45, y: 0.5 });
+    assert.equal(ring.streaming, false, 'moves with nobody around do not start it');
+  } finally {
+    cast.stop();
   }
 });
